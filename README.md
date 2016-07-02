@@ -2,4 +2,6 @@
 
 R code for figures in the slides of Coursera Statistics with R specialization.
 
-Currently this repository only contains figures from Course 4 - Bayesian Statistics. If further code is requested, please file an issue.
+Currently this repository only contains figures from Course 4 - Bayesian Statistics. If further code is requested, please file an issue here, or comment on the course discussion forums.
+
+Note that not all videos are listed among the folders. R code for videos where there are figures in the slides generated in R, and where the faculty teaching the course decided that would be useful for learners to view the code are shared in this repository. If further code is requested, please file an issue here, or comment on the course discussion forums.
