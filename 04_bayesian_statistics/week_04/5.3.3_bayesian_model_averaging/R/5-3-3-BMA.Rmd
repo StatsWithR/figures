@@ -1,10 +1,8 @@
 ---
 title: "5.3.3 Bayesian model averaging"
 author: "Dr. Merlise Clyde, Duke University"
-output: pdf_document
+output: github_document
 ---
-
-
 
 
 **Read In Data and Preprocess**
