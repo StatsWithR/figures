@@ -159,7 +159,7 @@ summary(cognitive)</code></pre>
 ##  Mean   :22.79  
 ##  3rd Qu.:25.00  
 ##  Max.   :29.00</code></pre>
-<p><em>Note: you do not need to use the as.numeric function to convert them to 0 or 1 values and could leave them as TRUE/FALSE, however, since the “levels”&quot; appear in the labels in the plot I converted them so that the labels were shorter. Similarly, the variable names were shortened also for cosmetic reasons for the slides only,</em></p>
+<p><em>Note: you do not need to use the as.numeric function to convert them to 0 or 1 values and could leave them as TRUE/FALSE, however, since the “levels”&quot; appear in the labels in the plot I converted them so that the labels were shorter. Similarly, the variable names were shortened also for cosmetic reasons for the slides only.</em></p>
 <p><strong>Bayesian Model Averaging using BAS</strong></p>
 <p>You will need to install the <code>BAS</code> package from <code>CRAN</code> and load the library.</p>
 <pre class="r"><code>library(BAS)
@@ -190,9 +190,7 @@ plot(cog_coef, subset=c(2:5))</code></pre>
 ## age         0.02089    0.11738   0.06898</code></pre>
 <p><em>Note: <code>BAS</code> currently centers all covarites. This does not change the slope coefficients, however the intercept in all models is <span class="math inline">\(\bar{Y}\)</span>. </em></p>
 <p>Finally calculate the probabiliy that the coefficient for age is not zero. The marginal posterior inclusion probabilities are stored in the <code>bas</code> object as <code>probne0</code>.</p>
-<ul>
-<li>The intercept is always in position 1, so we need to add one to p to extract the last coefficient corresponding to the variable age. *</li>
-</ul>
+<p><em>The intercept is always in position 1, so we need to add one to p to extract the last coefficient corresponding to the variable age.</em></p>
 
 
 

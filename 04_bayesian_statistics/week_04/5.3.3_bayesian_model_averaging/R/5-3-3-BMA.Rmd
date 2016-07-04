@@ -4,12 +4,6 @@ author: "Dr. Merlise Clyde, Duke University"
 output: pdf_document
 ---
 
-```{r include=FALSE, echo=FALSE}
-library(knitr)
-opts_chunk$set(
-concordance=TRUE
-)
-```
 
 
 
@@ -32,7 +26,7 @@ colnames(cognitive) = c("kid_score", "hs","iq", "work", "age")
 summary(cognitive)
 ```
 
-*Note: you do not need to use the as.numeric function to convert them to 0  or 1 values and could leave them as TRUE/FALSE, however, since the "levels"" appear in the labels in the plot I  converted them so that the labels were shorter.  Similarly, the variable names were shortened also for cosmetic reasons for the slides only,*
+*Note: you do not need to use the as.numeric function to convert them to 0  or 1 values and could leave them as TRUE/FALSE, however, since the "levels"" appear in the labels in the plot I  converted them so that the labels were shorter.  Similarly, the variable names were shortened also for cosmetic reasons for the slides only.*
 
 
 **Bayesian Model Averaging using BAS**
@@ -86,5 +80,6 @@ probne0`.
 p = 4
 p.age = round(1 - cog_coef$probne0[p+1], 3)
 ```
-* The intercept is always in position 1, so we need to add one to p to extract the last coefficient corresponding to the variable age. *
+
+*The intercept is always in position 1, so we need to add one to p to extract the last coefficient corresponding to the variable age.*
 
