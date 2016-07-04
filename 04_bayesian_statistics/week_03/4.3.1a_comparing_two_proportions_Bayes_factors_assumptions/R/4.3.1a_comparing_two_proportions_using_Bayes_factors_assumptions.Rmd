@@ -8,20 +8,23 @@ output: github_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## create the data based on summaries
+## create the data based on summary counts ##
 ```{r data}
 USASurvey = matrix(c(34,61,52,61, 4,0), ncol=2,byrow=T)
 colnames(USASurvey) = c("Male", "Female")
 rownames(USASurvey) = c("Yes", "No", "Not Sure")
 USASurvey
 ```
-### Compute the sample sizes in each group ###
+### compute the sample sizes in each group ###
 ```{r sum}
 n = apply(USASurvey, 2, sum)
 ```
 
+Note:  we are combining "No" and "Not Sure" into the "Not Yes" group, so for analyses we need just the total counts in each group `n` and the number of "Yes" counts or the first row `USASurvey[1,]`.
 
-## Beta prior and posterior distribution for males ##
+## Prior and Posterior Beta Distributions##
+
+### Beta prior and posterior distribution for males under HA ###
 ```{r males}
 myblue = rgb(86,155,189, name="myblue", max=256)
 aA.M = c(.5, .5)   # default beta hyperparameters for Males
@@ -38,7 +41,9 @@ legend(.6, 7 ,  legend=c("male", "prior"),
        col=c(myblue, "darkgrey"), lwd=rep(2,2),  lty=c(1,2))
 ```
 
-## Beta prior and posterior for females
+
+
+### Beta prior and posterior distribution for females under HA ###  
 ```{r females}
 aA.F = c(.5, .5)   # default beta hyperparameters for Females
 aO = aA.M + aA.F   # Combined Prior
@@ -55,13 +60,17 @@ legend(.6, 8, legend=c("male", "female", "prior"),
 ```
 
 ## Pooled analysis under H0 ##
-### pooled prior ###
+
+###pooled prior###
+we obtain the hyperparameters of the beta prior distribution under HO by adding the hyperparemters of the two groups
+
 ```{r pooled}
 plot(x, dbeta(x, aA.M[1]+aA.F[1], aA.M[2]+aA.F[2]), 
      xlab=expression(p), ylab="density",
      type="l", col="darkgrey", lwd=3, lty=2)
 ```
-### pooled prior and posterior distribution under H0 and overlay of posteriors under HA
+
+###pooled prior and posterior distribution under H0 and overlay of posteriors under HA###
 ```{r}
 plot(x, dbeta(x, USASurvey[1,"Male"]+ USASurvey[1,"Female"] + aA.M[1]+aA.F[1], 
               n[1]+n[2] - (USASurvey[1,"Male"]+USASurvey[1,"Female"]) +  
