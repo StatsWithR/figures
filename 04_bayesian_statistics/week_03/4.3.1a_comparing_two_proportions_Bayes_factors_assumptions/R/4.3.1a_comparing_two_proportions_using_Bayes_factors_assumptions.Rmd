@@ -27,8 +27,8 @@ Note:  we are combining "No" and "Not Sure" into the "Not Yes" group, so for ana
 ### Beta prior and posterior distribution for males under HA ###
 ```{r males}
 myblue = rgb(86,155,189, name="myblue", max=256)
-aA.M = c(.5, .5)   # default beta hyperparameters for Males
 
+aA.M = c(.5, .5)   # default beta hyperparameters for Males
 x = seq(0, 1, length=1000)
 plot(x, dbeta(x, USASurvey[1,"Male"] + aA.M[1], 
               n[1] - USASurvey[1,"Male"] + aA.M[2]),
@@ -46,7 +46,7 @@ legend(.6, 7 ,  legend=c("male", "prior"),
 ### Beta prior and posterior distribution for females under HA ###  
 ```{r females}
 aA.F = c(.5, .5)   # default beta hyperparameters for Females
-aO = aA.M + aA.F   # Combined Prior
+
 plot(x, dbeta(x, USASurvey[1,"Female"] + aA.F[1],  
               n[2] - USASurvey[1,"Female"] + aA.F[2]),
      type="l", col="orange", lwd=2, 
@@ -65,16 +65,16 @@ legend(.6, 8, legend=c("male", "female", "prior"),
 we obtain the hyperparameters of the beta prior distribution under HO by adding the hyperparemters of the two groups
 
 ```{r pooled}
-plot(x, dbeta(x, aA.M[1]+aA.F[1], aA.M[2]+aA.F[2]), 
+aO = aA.M + aA.F   # Combined Prior
+plot(x, dbeta(x, aO[1], aO[2]), 
      xlab=expression(p), ylab="density",
      type="l", col="darkgrey", lwd=3, lty=2)
 ```
 
 ###pooled prior and posterior distribution under H0 and overlay of posteriors under HA###
 ```{r}
-plot(x, dbeta(x, USASurvey[1,"Male"]+ USASurvey[1,"Female"] + aA.M[1]+aA.F[1], 
-              n[1]+n[2] - (USASurvey[1,"Male"]+USASurvey[1,"Female"]) +  
-              aA.M[2]+aA.F[2]), 
+plot(x, dbeta(x, USASurvey[1,"Male"]+ USASurvey[1,"Female"] + aO[1], 
+              n[1]+n[2]-(USASurvey[1,"Male"]+USASurvey[1,"Female"]) + aO[2]), 
      type="l", col="black", lwd=3, 
      xlab=expression(p), ylab="density")
 # add posterior for male under HA
