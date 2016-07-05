@@ -1,0 +1,96 @@
+---
+title: "Comparing two proportions using Bayes factors"
+author: Dr. Merlise Clyde, Duke University
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+myblue = rgb(86,155,189, name="myblue", max=256)
+```
+
+## create the data based on summary counts ##
+```{r data}
+USASurvey = matrix(c(34,61,52,61, 4,0), ncol=2,byrow=T)
+colnames(USASurvey) = c("Male", "Female")
+rownames(USASurvey) = c("Yes", "No", "Not Sure")
+
+```
+### compute the sample sizes in each group ###
+```{r sum}
+n = apply(USASurvey, 2, sum)
+```
+
+Recall:  we are combining "No" and "Not Sure" into the "Not Yes" group, so for analyses we need just the total counts in each group `n` and the number of "Yes" counts or the first row `USASurvey[1,]`.
+
+## plot of prior and posterior distributions##
+
+```{r plot}
+aA.M = c(.5, .5)   # default beta hyperparameters for Males
+aA.F = c(.5, .5)   # default beta hyperparameters for Females
+aO = aA.M + aA.F   # Combined Prior
+x = seq(0, 1, length=1000)
+
+plot(x, dbeta(x, USASurvey[1,"Male"]+ USASurvey[1,"Female"] + aO[1], 
+              n[1]+n[2] - (USASurvey[1,"Male"]+USASurvey[1,"Female"]) +  
+              aO[2]), 
+     type="l", col="black", lwd=3, 
+     xlab=expression(p), ylab="density")
+# add posterior for male under HA
+lines(x, dbeta(x, USASurvey[1,"Male"] + aA.M[1], 
+               n[1]-USASurvey[1,"Male"] + aA.M[2]), type="l", col=myblue,
+     lwd=3)
+# add prior for female under HA
+lines(x, dbeta(x, USASurvey[1,"Female"] + aA.F[1],  
+               n[2] - USASurvey[1,"Female"] + aA.F[2]), 
+      col="orange", lwd=3)
+# add pooled prior
+lines(x, dbeta(x, aO[1], aO[2]), lty=2, col="darkgrey", lwd=2)
+# legend
+legend(.6, 8, legend=c("pooled","male", "female", "prior"), 
+       col=c("black", myblue, "orange", "darkgrey"),
+       lwd=rep(2,4),  lty=c(rep(1,3),2)
+        )
+```
+
+## compute the Bayes factor and posterior probabilities##
+
+We can directly calculate the Bayes factor from the slides using the `beta` function in `R`.  However, because of the  number of expressions and the fact that we my want to re-use this code, let's define a function and use it.  This is provided primarily for the energetic learner that would like to dive deeper, so feel free to skip over this and just use the provided function as described in the next section.
+
+```{r BFprop-function}
+bayes.prop.test = function(yA, nA, yB, nB, pH0 = .5, alphaA=.5, betaA=NULL,alphaB=.5, betaB=NULL,
+                           alphaC=NULL, betaC=NULL) {
+  if (is.null(betaA)) betaA = alphaA
+  if (is.null(betaB)) betaB = alphaB
+  if (is.null(alphaC)) alphaC = alphaA + alphaB
+  if (is.null(betaC))  betaC =  betaA + betaB
+  logmarg0 = lbeta(yA + yB + alphaC, nA + nB - yA - yB + betaC) -
+             lbeta(alphaC, betaC)
+  logmarg1 = lbeta(yA + alphaA, nA - yA + betaA) + 
+             lbeta(yB + alphaB, nB - yB + betaB) -
+             lbeta(alphaA, betaA) - lbeta(alphaB, betaB)
+  BF0.1 = exp(logmarg0 - logmarg1)
+  prior.oddsH1 = (1 - pH0)/pH0
+  postprobH0 = 1/(1 + prior.oddsH1/BF0.1)
+
+  return(list(postprobH0 = postprobH0, BF.H02H1 =  BF0.1))
+}
+```
+This takes as input the number of successes and sample sizes in the two groups, the prior probability of H0 which by default is set to `ph0= .5`, and the prior hyperparameters.  By default these are based on the Jeffrey's prior within each group, but you may supply other values to explore sensitivity or supply more informative values.  By default the hyperparameters of the beta distribution under HO are based on pooling the two groups. 
+
+The `lbeta` function is used to compute the log beta function.  This is more stable numerically and the terms are added on the log scale to obtain the log of the marginal likelihood.   Expoentiating the difference in the log marginal likelihoods provides the desired Bayes factor.
+
+This function returns the following values
+* `postprobH0`  the posterior probability of HO
+* `BF.H02H1`  the Bayes facotr for comparing HO to HA.   This can be used with other prior odds to determine alternate posterior probabilities.
+
+### evaluate the Bayes factor and posterior probability ###
+Let's see what the function  provides for the `USASurvey` data.  The prior hyperaparameters that we specified are the default options, so we just need to provide the number of males, females and sample sizes in the groups.
+
+```{r BF}
+out = bayes.prop.test(USASurvey[1,"Male"], n[1], 
+                      USASurvey[1,"Female"], n[2])
+out
+```
+
+From this we can obtain the posterior probability using `out$postprobH0` and the Bayes factor using `out$BF.H02H1`.
