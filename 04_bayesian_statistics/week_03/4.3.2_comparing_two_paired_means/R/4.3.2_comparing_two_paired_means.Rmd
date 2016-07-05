@@ -61,7 +61,7 @@ bayes.t.test = function(x, n0=1, mu0 = 0,  prior.H1=.5) {
                  log(t^2 + n - 1))))
   PO= BF*prior.H1/(1 - prior.H1)
   post.prob = 1/(1 + 1/PO)
-  return(list(BFH1.H2=BF, post.prob.H1 = post.prob, t=t, p.value=out$p.value, df=n-1))
+  return(list(BF.H1.H2=BF, post.prob.H1 = post.prob, t=t, p.value=out$p.value, df=n-1))
 }
 ```
 
@@ -69,6 +69,13 @@ bayes.t.test = function(x, n0=1, mu0 = 0,  prior.H1=.5) {
 out = bayes.t.test(zinc$difference)
 out
 ```
-H1 is that the mean difference is 0 while H2 is that the mean difference is not zero.
+H1 is that the mean difference is 0 while H2 is that the mean difference is not zero. To obtain the Bayes factor for H2 to H1, we simply take 1/BF.H1.H2
+```{r BF.H2.H1}
+
+1/out$BF.H1.H2
+```
+
 
 Note: this function could be used for any one sample hypothesis test of $\mu = \mu_0$ versus $\mu \neq \mu_0$.  
+
+
