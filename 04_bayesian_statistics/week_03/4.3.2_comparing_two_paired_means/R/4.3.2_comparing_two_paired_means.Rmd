@@ -49,13 +49,21 @@ The black is a standard normal distribution, while the blue is a Student-t distr
 
 ### Bayes factors and posterior probabilities ###
 
-Let's define a function to help simplify the calculations of the posterior probabilities and the Bayes factor.  
+Let's define a function to help simplify the calculations of the posterior probabilities and the Bayes factor using the normal prior
+$$
+\mu \mid \sigma^2 \sim N(\mu_0, \sigma^2/n0)
+$$
+and
+$$
+p(\sigma^2) \propto 1/\sigma^2
+$$
 
 ```{r functions}
 bayes.t.test = function(x, n0=1, mu0 = 0,  prior.H1=.5) {
   out = t.test(x - mu0)
   t = as.numeric(abs(out$statistic))
   n = length(x)
+  # BF is BF of H1 to H0
   BF=exp(.5*(log(n + n0) - log(n0) +
                  (n-1)*(log(t^2*n0/(n + n0) + (n - 1)) -
                  log(t^2 + n - 1))))
