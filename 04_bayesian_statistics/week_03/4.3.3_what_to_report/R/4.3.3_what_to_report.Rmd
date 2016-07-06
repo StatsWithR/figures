@@ -71,11 +71,13 @@ return(list(BF.H1.H2=BF, post.prob.H1 = post.prob.H1,
 }
 ```
 
+Let's use the function and create the plot of the posterior distribution
 ```{r posteriorplot}
 out = bayes.t.test(zinc$difference, plot=T)
 
 ```
 
+Typing the name of the function will produce the numerical summaries.  Note some of these will be different from the slides to due simulation variability.
 ```{r output}
 out
 ```
