@@ -1,0 +1,68 @@
+---
+title: "Comparing two independent means"
+author: Dr Merlise Clyde, Duke University
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+Define the data using summary statistics
+```{r data}
+y = c(52.1, 27.1)
+sd=c(45.1, 26.4) 
+n=c(22,22)
+```
+
+### Initialization ###
+
+Source functions for slides
+```{r source}
+source("behren-fisher.R")
+myblue = rgb(86,155,189, name="myblue", max=256)
+```
+
+### MCMC Sampling ###
+
+Run the MCMC sampler using R functions (this does not require `jags`.  This uses numerical integration to obtain the marginal likelihoods that enter into the Bayes factors and MCMC sampling to sample from the posterior distributions under H2.   Under H1 the difference is exactly 0 so no simulations are needed.  The `plot=T` option will produce a plot of the posterior distribution under H2 with the pointmass at 0 under H1 and with a shaded area corresponding to the 95% HPD region combining draws from H1 and H2.
+
+
+```{r sim}
+set.seed(5)
+out = BFt.test(y = c(52.1, 27.1), sd=c(45.1, 26.4), n=c(22,22), 
+               method="intrinsic", suff=T, jags=FALSE,
+               nsim=10000, thin=5, burn=1000,
+               colHPD=myblue, main="", 
+               xlab=expression(mu[A] - mu[B]), lwd=3, plot=T)
+
+```
+
+From the output we can extract the 95% HPD interval for the difference of the means and the posterior probability of H1 (that the means are equal).
+
+```{r estimates}
+out$ci
+out$post.prob
+```
+
+This is based on simulating from the posterior distribution so the credible interval may change slighly if different random seeds are used or if more simulations are used.
+
+### Using JAGS ###
+
+If you have installed `jags` on your computer, then the following option using `jags=TRUE` is much faster, although the estimates of the posterior probability are subject to Monte Carlo variation.  To reduce that you may need to use a larger number of simulations.
+
+```{r jags}
+set.seed(5)
+out = BFt.test(y = c(52.1, 27.1), sd=c(45.1, 26.4), n=c(22,22), 
+               method="intrinsic", colHPD=myblue, nsim=1000000,
+               suff=T, jags=TRUE, main="", 
+               xlab=expression(mu[A] - mu[B]), lwd=3, plot=T)
+```
+
+Estimates from jags
+
+```{r jags-estimates}
+out$ci
+out$post.prob
+```
