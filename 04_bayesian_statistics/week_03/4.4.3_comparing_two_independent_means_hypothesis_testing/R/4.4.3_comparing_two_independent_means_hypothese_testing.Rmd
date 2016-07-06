@@ -66,3 +66,5 @@ Estimates from jags
 out$ci
 out$post.prob
 ```
+
+These will not agree completely with the estimates above as `jags` does not allow the limiting "improper" prior distributions that are used in the intrinsic prior.
