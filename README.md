@@ -1,4 +1,4 @@
-# R code
+# Video R-code
 
 R code for figures and analyses in the slides of Coursera Statistics
 with R specialization.
