@@ -1,0 +1,1 @@
+/Users/mclyde/Box Sync/8X.00 - DASI Specialization/84.00 Bayesian Statistics/Slides/Week 3/4-4-3-two-means-HT/behren-fisher-MC.R
