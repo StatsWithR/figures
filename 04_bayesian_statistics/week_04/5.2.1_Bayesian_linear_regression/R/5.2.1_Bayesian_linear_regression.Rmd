@@ -1,0 +1,83 @@
+---
+title: "Bayesian linear regression"
+author: Dr Merlise A Clyde, Duke University
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Read in the data ###
+```{r}
+library(BAS)
+data(bodyfat)
+summary(bodyfat)
+```
+
+### Scatterplot and OLS line ###
+```{r}
+myblue = rgb(86,155,189, name="myblue", max=256)
+mydarkgrey = rgb(.5,.5,.5, name="mydarkgrey", max=1)
+
+bodyfat.lm = lm(Bodyfat ~ Abdomen, data=bodyfat)
+
+plot(Bodyfat ~ Abdomen, data=bodyfat, 
+     xlab="abdomen circumference (cm)", 
+     col=myblue, pch=16, main="")
+beta = coef(bodyfat.lm)
+abline(beta, lwd=4, col=1)
+```
+
+### Posterior distribution using the reference prior###
+
+We will use `lm` to obtain the OLS estimates which provide the posterior mean and standard deviation, while the `confint` function provides confidence intervals, which under the reference prior are 95% credible intervals.  The code below extracts them and just relabels the output.
+
+
+```{r}
+summary(bodyfat.lm)
+
+out = summary(bodyfat.lm)$coef[, 1:2]
+out = cbind(out, confint(bodyfat.lm))
+colnames(out) = c("posterior mean", "sd", "2.5", "97.5")
+round(out, 2)
+```
+
+### credible intervals for the mean and prediction ###
+
+```{r}
+x = bodyfat$Abdomen
+y= bodyfat$Bodyfat
+xnew <- seq(min(x), max(x), length.out = 100)
+ynew <- data.frame(predict(bodyfat.lm, newdata = data.frame(Abdomen = xnew), 
+                   interval = "confidence", level = 0.95))
+plot(x,y, xlab = "abdomen", ylab="bodyfat", col=myblue, pch=16)
+lines(ynew$lwr ~ xnew, lty = 2, lwd=3, col=mydarkgrey)
+lines(ynew$upr ~ xnew, lty = 2, lwd=3, col=mydarkgrey)
+abline(bodyfat.lm, col="orange")
+ynew <- data.frame(predict(bodyfat.lm, newdata = data.frame(Abdomen = xnew), 
+                   interval = "prediction", level = 0.95))
+lines(ynew$lwr ~ xnew, lty = 3, lwd=3, col=mydarkgrey)
+lines(ynew$upr ~ xnew, lty = 3, lwd=3, col=mydarkgrey)
+points(bodyfat[39,"Abdomen"], bodyfat[39,"Bodyfat"], col="orange", cex=5)
+legend(110,15, legend=c("Posterior mean", "95% CI for mean", "95% CI for predictions"), 
+       col=c("orange",rep(mydarkgrey, 2)), lwd=3, lty=c(1,2, 3))
+
+```
+
+###Outliers###
+```{r}
+source("bayes-outliers.R")
+library(mvtnorm)
+outliers= Bayes.outlier.prob(bodyfat.lm)
+prob.39 = outliers$prob.outlier[39]
+prob.39
+
+n = nrow(bodyfat)
+k = qnorm(.5 + .5*.95^(1/n))
+outliers.no= Bayes.outlier.prob(bodyfat.lm, k=k)
+prob.no.39 = outliers.no$prob.outlier[39]
+prob.no.39
+
+```
+

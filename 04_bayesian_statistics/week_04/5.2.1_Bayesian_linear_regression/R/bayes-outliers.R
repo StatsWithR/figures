@@ -1,0 +1,1 @@
+/Users/mclyde/Box Sync/8X.00 - DASI Specialization/84.00 Bayesian Statistics/Slides/Week 4/5-2-1-slr/bayes-outliers.R
