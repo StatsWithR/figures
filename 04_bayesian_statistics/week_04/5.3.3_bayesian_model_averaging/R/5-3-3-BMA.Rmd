@@ -69,7 +69,7 @@ To obtain the numerical summaries of means, standard deviations and posterior in
 cog_coef
 ```
 
-*Note:  `BAS` currently centers all covarites.  This does not change the slope coefficients, however the intercept in all models is $\bar{Y}$.  *
+*Note:  `BAS` currently centers all covariates.  This does not change the slope coefficients, however the intercept in all models is $\bar{Y}$.  *
 
 Finally calculate the probabiliy that the coefficient for age is not zero.  The marginal posterior inclusion probabilities are stored in the `bas` object as `
 probne0`. 
