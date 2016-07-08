@@ -1,0 +1,140 @@
+---
+title: "demo: crime and punishment"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load the data and preprocess
+```{r data}
+library(MASS)
+data(UScrime)
+summary(UScrime)
+# see help(UScrime) for more information.  The variables have been standardized 
+# so interpretation may be less meaningful in absolute terms. 
+
+```
+Log transform all continuous variables except `So` which is in column 2.  We're overwriting the dataframe in this case.
+
+```{r transform}
+#
+UScrime[,-2] = log(UScrime[,-2])
+```
+
+### Run BAS ###
+
+We are going to use the Zellner-Siow Cauchy prior
+
+```{r BAS}
+library(BAS)
+crime.ZS =  bas.lm(y ~ ., 
+                   data=UScrime,
+                   prior="ZS-null",
+                   modelprior=uniform(),
+                   method = "MCMC") 
+```
+
+This will run the MCMC sampler until the number of uniques sampled models exceeds `n.models` which is $2^p$ (if $p < 19$) by default  or until `MCMC.iterations` has been exceeded, where `MCMC.iterations = n.models*2` by default.
+
+### Estimates of Marginal Posterior Inclusion Probabilities (pip) ###
+
+There are two estimates of the marginal inclusion probabilities:  `object$probne0` which are obtained by using the renormalized posterior odds from sampled models to estimate probabilities and the estimates based on Monte Carlo frequencies `object$probs.MCMC`.  These should be in close agreement if the MCMC sampler has run for enough iterations.
+
+```{r pip}
+myblue = rgb(86,155,189, name="myblue", max=256)
+mydarkgrey = rgb(.5,.5,.5, name="mydarkgrey", max=1)
+plot(crime.ZS$probne0, crime.ZS$probs.MCMC, 
+     xlab="pip (renormalized)", ylab="pip (MCMC)", 
+     col=myblue,pch=16, cex=1.5, bty="n")
+abline(0,1)
+```
+
+`BAS` includes a diagnostic function to automate this
+```{r diagnostics}
+
+diagnostics(crime.ZS, type="pip", col=myblue, pch=16, cex=1.5)
+
+```
+
+Each point represents one posterior inclusion probability for the 15 variables estimated under the two methods. The two estimators are in pretty close agreement.
+
+We can also use this function to see if the model probabilities have converged
+```{r diag-models}
+
+diagnostics(crime.ZS, type="model", col=myblue, pch=16, cex=1.5)
+
+```
+
+This suggests that we should use more `MCMC.iterations` if we want more accurate estimates of the posterior model probabilities.
+
+### plots of BAS objects ###
+
+BAS objects have a default plotting method:
+
+```{r}
+par(mfrow=c(2,2))
+plot(crime.ZS, ask=F, add.smooth=F, caption="", 
+     col.in=myblue, col.ex=mydarkgrey, 
+     pch=17, lwd=2)
+```
+
+These may be slightly different than in the video due to Monte Carlo variation.
+
+For the video we looked at them one at a time:
+
+**Residuals versus fitted values using BMA**
+```{r}
+plot(crime.ZS, which=1,add.smooth=F, ask=F, pch=16, sub.caption="", caption="")
+```
+
+As with `lm` we would like to see a uniform spread of points for each fitted value indicating that the constant variance assumption is acceptable.
+
+**Cumulative sampled  probability**
+
+```{r}
+plot(crime.ZS, which=2, add.smooth=F)
+```
+
+This is a plot of the cumulative probability of the unique models that were sampled where everytime a new model is discovered there is a jump in the cumulative probability.  Ideally this levels off suggesting that each additional model has a very small probabilty and does not contribute substantially to the posterior distribution. 
+*Try rerunning `bas.lm` using `method="BAS"` to see what happens with enumeration.* 
+
+**Model Complexity**
+
+```{r}
+plot(crime.ZS, which=3, ask=F, caption="", sub.caption="")
+```
+
+
+**Marginal Inclusion probabilities**
+```{r}
+plot(crime.ZS, which=4, ask=F, caption="", sub.caption="", 
+     col.in=myblue, col.ex=mydarkgrey, lwd=3)
+```
+
+### Model Space Visualization ###
+
+```{r}
+image(crime.ZS, rotate=F)
+```
+
+### Posterior Uncertainty in Coefficents ###
+
+The function `coef` creates an object for BMA coefficients and summaries.
+We will look at the posterior distributions of just coefficients 5:6.
+```{r}
+coef.ZS=coef(crime.ZS)
+
+par(mfrow=c(1,2))
+plot(coef.ZS, subset=c(5:6), 
+     col.lab=mydarkgrey, 
+     col.axis=mydarkgrey, 
+     col=mydarkgrey, ask=F)
+```
+
+Using `plot(coef.ZS`)  will produce plots for all coefficients in the model.
+```{r}
+plot(coef.ZS)
+```
+
