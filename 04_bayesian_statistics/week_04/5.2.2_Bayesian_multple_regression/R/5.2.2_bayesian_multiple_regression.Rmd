@@ -1,0 +1,74 @@
+---
+title: "Bayesian multiple regression"
+author: Dr Merlise Clyde
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+**Read In Data and Preprocess**
+
+The data are available as a "dta" file from Gelman's website. You will need to load the `foreign` library to be able to read the file in as a dataframe. 
+
+
+```{r data}
+library(foreign)
+cognitive = read.dta("http://www.stat.columbia.edu/~gelman/arm/examples/child.iq/kidiq.dta")
+summary(cognitive)
+```
+
+The analyses in Course 3 used indicator variables for whether the mom worked for 1 or more years or had more than a high school education.  The following code will create these dummy or indicator variables
+```{r preprocess}
+cognitive$mom_work = as.numeric(cognitive$mom_work > 1)
+cognitive$mom_hs =  as.numeric(cognitive$mom_hs > 0)
+colnames(cognitive) = c("kid_score", "hs","iq", "work", "age") 
+summary(cognitive)
+```
+
+*Note: you do not need to use the as.numeric function to convert them to 0  or 1 values and could leave them as TRUE/FALSE, however, since the "levels"" appear in the labels in the plot I  converted them so that the labels were shorter.  Similarly, the variable names were shortened also for cosmetic reasons for the slides only.*
+
+###  Fit the Bayesian model ###
+
+We will use the `BAS` package to fit various Bayesian multiple regression models.  
+
+```{r}
+library(BAS)
+cog.bas = bas.lm(kid_score ~ ., data=cognitive, 
+                 prior="BIC", 
+                 modelprior=Bernoulli(1), 
+                 initprobs=rep(.99, 4))
+
+```
+
+This uses a model formula as in `lm` to specify the response and predictor variables, a `data` argument to provide the data frame.  The addition arguments include the prior on the coefficients.  We will use `BIC` here as this is based on the non-informative reference prior.  The modelprior says that every variable is included with probabilty 1; the argument of the `Bernoulli` function.   Because we want to fit just the full model we will use this initprobs argument to specify that the starting model has all variables included with high probability. 
+
+### Posterior means and standard deviations ###
+
+To extract the posterior means and standard deviations we use the `coef` function.
+
+```{r coef}
+cog.coef=coef(cog.bas)
+cog.coef
+```
+
+The probability that the coefficients are 0 is 0, as our prior probability that they were included was 1.
+
+We can visualize the posterior distribution using the `plot` function.
+```{r}
+myblue = rgb(86,155,189, name="myblue", max=256)
+mydarkgrey = rgb(.5,.5,.5, name="mydarkgrey", max=1)
+par(mfrow=c(2,2), col.lab=mydarkgrey, col.axis=mydarkgrey, col=mydarkgrey)
+
+plot(cog.coef, subset=2:5, ask=F)
+```
+
+In this case we are plotting all coefficients, except the intercept using the `subset` argument.  (One corresponds to the intercept.)
+
+
+```{r}
+out = 
+out
+```
+
