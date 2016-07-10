@@ -37,12 +37,13 @@ We will use the `BAS` package to fit various Bayesian multiple regression models
 library(BAS)
 cog.bas = bas.lm(kid_score ~ ., data=cognitive, 
                  prior="BIC", 
-                 modelprior=Bernoulli(1), 
-                 initprobs=rep(.99, 4))
+                 modelprior=Bernoulli(1), bestmodel=rep(1,5), 
+                 n.models=1)
+       
 
 ```
-
-This uses a model formula as in `lm` to specify the response and predictor variables, a `data` argument to provide the data frame.  The addition arguments include the prior on the coefficients.  We will use `BIC` here as this is based on the non-informative reference prior.  The modelprior says that every variable is included with probabilty 1; the argument of the `Bernoulli` function.   Because we want to fit just the full model we will use this initprobs argument to specify that the starting model has all variables included with high probability. 
+This uses a model formula as in `lm` to specify the response and predictor variables, a `data` argument to provide the data frame.  The addition arguments include the prior on the coefficients.  We will use `BIC` here as this is based on the non-informative reference prior.  The modelprior says that every variable is included with probabilty 1; the argument of the `Bernoulli` function.   Because we want to fit just the full model, 
+we will use `bestmodel = rep(1,5)`  where the ones indicate that the intercept and all 4 predictors are included. The argument `n.models=1` will fit just this model. 
 
 ### Posterior means and standard deviations ###
 
@@ -53,10 +54,10 @@ cog.coef=coef(cog.bas)
 cog.coef
 ```
 
-The probability that the coefficients are 0 is 0, as our prior probability that they were included was 1.
+The probability that the coefficients are  not equal to 0 is 1, as our Bernoulli prior probability that they were included was 1, forcing them all to be included.
 
 We can visualize the posterior distribution using the `plot` function.
-```{r}
+```{r plot}
 myblue = rgb(86,155,189, name="myblue", max=256)
 mydarkgrey = rgb(.5,.5,.5, name="mydarkgrey", max=1)
 par(mfrow=c(2,2), col.lab=mydarkgrey, col.axis=mydarkgrey, col=mydarkgrey)
@@ -67,8 +68,27 @@ plot(cog.coef, subset=2:5, ask=F)
 In this case we are plotting all coefficients, except the intercept using the `subset` argument.  (One corresponds to the intercept.)
 
 
+### Credible intervals###
+
+`BAS` has a method for extracting credible intervals from the output of `coef`.  
 ```{r}
-out = 
-out
+confint(cog.coef)
+confint(cog.coef, parm=2:5)
 ```
+The `parm` argument returns credible intervals for just the subset of indices provided, where `parm=1` is the intercept.
+
+The table provided in the video combines the two summaries:
+
+```{r}
+out = confint(cog.coef)
+names =c("post mean", "post sd", colnames(out))
+out = cbind(cog.coef$postmean, cog.coef$postsd, out)
+colnames(out) = names
+out
+#  round output 
+round(out[-1,], 2)
+
+```
+
+If the coefficients for BIC models are obtained using `lm`  the intercept will differ from above, as `BAS` uses a centered covariate parameterization for model fitting so that the intercept is always $\bar{Y}$.
 
