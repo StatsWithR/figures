@@ -69,6 +69,19 @@ diagnostics(crime.ZS, type="model", col=myblue, pch=16, cex=1.5)
 
 This suggests that we should use more `MCMC.iterations` if we want more accurate estimates of the posterior model probabilities.
 
+```{r biggerMCMC}
+crime.ZS =  bas.lm(y ~ ., 
+                   data=UScrime,
+                   prior="ZS-null",
+                   modelprior=uniform(),
+                   method = "MCMC", MCMC.iterations = 10^6)  
+
+diagnostics(crime.ZS, type="model", pch=16, col=myblue)
+```
+
+
+
+
 ### plots of BAS objects ###
 
 BAS objects have a default plotting method:
@@ -136,5 +149,12 @@ plot(coef.ZS, subset=c(5:6),
 Using `plot(coef.ZS`)  will produce plots for all coefficients in the model.
 ```{r}
 plot(coef.ZS)
+```
+
+
+Credible intervals:
+
+```{r CI}
+round(confint(coef.ZS), 4)
 ```
 
