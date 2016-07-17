@@ -158,3 +158,8 @@ Credible intervals:
 round(confint(coef.ZS), 4)
 ```
 
+
+## Prediction
+
+`BAS` includes `fitted` and `predict` functions to provide estimates of the unknown regression function and predicted values at given design  points.
+
