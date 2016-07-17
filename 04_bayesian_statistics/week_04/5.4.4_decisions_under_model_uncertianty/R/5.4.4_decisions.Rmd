@@ -19,13 +19,7 @@ data(UScrime)
 
 UScrime[,-2] = log(UScrime[,-2])
 ```
-### Install BAS ###
-We need to install `BAS` from github to have the most recent version as the new predict options are not in version 1.2.2 on CRAN. 
 
-```{r git}
-library(devtools)
-install_github("merliseclyde/BAS")  # need version > 1.2.2
-```
 
 ### Run BAS ###
 
@@ -41,7 +35,7 @@ crime.ZS =  bas.lm(y ~ .,
 
 **Model Choice**
 
-`BAS` has methods defined to return fitted values, `fitted`, using the observed design matrix and predictions at either the observed data or potentially new values, `predict`, as with `lm`.
+`BAS` has methods defined to return fitted values, `fitted`, using the observed design matrix and predictions at either the observed data or potentially new values, `predict`, as with `lm`.  
 
 
 ```{r choice of estimator}
@@ -83,8 +77,8 @@ A little more interpretable version with names:
 
 **median probability model:**
 ```{r}
-MPM = fitted(crime.ZS, estimator="MPM")
-(crime.ZS$namesx[attr(MPM, 'model') +1])[-1]
+MPM = predict(crime.ZS, estimator="MPM")
+(crime.ZS$namesx[attr(MPM$fit, 'model') +1])[-1]
 ```
 
 Note that we can also extract the best model from the attribute in the fitted values as well.
@@ -93,8 +87,8 @@ Note that we can also extract the best model from the attribute in the fitted va
 
 This is the model that is closest to BMA predictions under squared error loss.
 ```{r}
-BPM = fitted(crime.ZS, estimator="BPM")
-(crime.ZS$namesx[attr(BPM, 'model') +1])[-1]
+BPM = predict(crime.ZS, estimator="BPM")
+(crime.ZS$namesx[attr(BPM$fit, 'model') +1])[-1]
 ```
 
 Let's see how they compare:
@@ -105,8 +99,37 @@ mydarkgrey = rgb(.5,.5,.5, name="mydarkgrey", max=1)
 par(cex=1.8, cex.axis=1.8, cex.lab=2, mfrow=c(2,2), mar=c(5, 5, 3, 3), col.lab=mydarkgrey, col.axis=mydarkgrey, col=mydarkgrey)
 library(GGally)
 ggpairs(data.frame(HPM = as.vector(HPM$fit),  #this used predict so we need to extract fitted values
-                   MPM = as.vector(MPM),  # this used fitted
-                   BPM = as.vector(BPM),  # this used fitted
+                   MPM = as.vector(MPM$fit),  # this used fitted
+                   BPM = as.vector(BPM$fit),  # this used fitted
                    BMA = as.vector(BMA$fit))) # this used predict
+```
+
+
+Using the `se.fit = TRUE` option with `predict` we can also calculate standard deviations for prediction or for the mean and use this as imput for the `confint` function for the prediction object.
+
+```{r se}
+BPM = predict(crime.ZS, estimator="BPM", se.fit=TRUE)
+crime.conf.fit = confint(BPM, parm="mean")
+crime.conf.pred = confint(BPM, parm="pred")
+cbind(BPM$fit, crime.conf.fit, crime.conf.pred)
+
+```
+
+Which state has the highest predicted crime rate?  the lowest?   
+
+```{r min}
+# lowest 
+best = which.min(BPM$fit)
+crime.ZS$X[best, BPM$bestmodel]
+```
+What characteristics lead to the lowest rates?   (where do the X values fall inthe distribution of the covariantes - are they at the extremes?)
+
+Using the `newdata` option as with the `predict` function in `lm`, you can predict at new values of the covariates (OK in this case the data frame is the same, so it is the same as the insample prediction).  The code below illustrates using BMA and Monte Carlo simulation to obtain the intervals.
+
+```{r}
+BPM = predict(crime.ZS, UScrime, estimator="BMA", se.fit=TRUE, nsim=10000)
+crime.conf.fit = confint(BPM, parm="mean")
+crime.conf.pred = confint(BPM, parm="pred")
+cbind(BPM$fit, crime.conf.fit, crime.conf.pred)
 ```
 
