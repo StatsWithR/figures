@@ -31,9 +31,8 @@ Run the MCMC sampler using R functions (this does not require `jags`.  This uses
 
 ```{r sim}
 set.seed(5)
-out = BFt.test(y = c(52.1, 27.1), sd=c(45.1, 26.4), n=c(22,22), 
-               method="intrinsic", suff=T, jags=FALSE,
-               nsim=10000, thin=5, burn=1000,
+out = BFt.test(y = c(52.1, 27.1), grp=NULL, sd=c(45.1, 26.4), n=c(22,22),
+               method="intrinsic",  suff=T,jags=F,nsim=10000,
                colHPD=myblue, main="", 
                xlab=expression(mu[A] - mu[B]), lwd=3, plot=T)
 
@@ -48,23 +47,43 @@ out$post.prob
 
 This is based on simulating from the posterior distribution so the credible interval may change slighly if different random seeds are used or if more simulations are used.
 
+
+
+We can also compute the credible interval conditional on H2 from the output.
+
+```{r ci-H2}
+HPDinterval(as.mcmc(out$diff[out$diff != 0]))
+```
+
+Remember this is calculated assuming that the means are different and so does not include the "draws" from the posterior under H1 that the means are exactly zero.
+
 ### Using JAGS ###
 
 If you have installed `jags` on your computer, then the following option using `jags=TRUE` is much faster, although the estimates of the posterior probability are subject to Monte Carlo variation.  To reduce that you may need to use a larger number of simulations.  If you have not installed `jags` comment out the chunk below.
 
 ```{r jags}
 set.seed(5)
-out = BFt.test(y = c(52.1, 27.1), sd=c(45.1, 26.4), n=c(22,22), 
-               method="intrinsic", colHPD=myblue, nsim=1000000,
-               suff=T, jags=TRUE, main="", 
+#out = BFt.test(y = c(52.1, 27.1), sd=c(45.1, 26.4), n=c(22,22), 
+#               method="intrinsic", colHPD=myblue, nsim=1000000,
+#               suff=T, jags=TRUE, main="", 
+#               xlab=expression(mu[A] - mu[B]), lwd=3, plot=T)
+
+out.jags = BFt.test(y = y, grp=NULL, sd=sd, n=n,
+               method="intrinsic",  suff=T,jags=TRUE, nsim=100000,
+               colHPD=myblue, main="", 
                xlab=expression(mu[A] - mu[B]), lwd=3, plot=T)
+
 ```
 
 Estimates from jags
 
 ```{r jags-estimates}
-out$ci
-out$post.prob
+out.jags$ci
+out.jags$post.prob
 ```
 
 These will not agree completely with the estimates above as `jags` does not allow the limiting "improper" prior distributions that are used in the intrinsic prior.
+
+```{r ci-H2-jags}
+HPDinterval(as.mcmc(out.jags$diff[out.jags$diff != 0]))
+```
