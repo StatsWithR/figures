@@ -18,7 +18,7 @@ n=c(22,22)
 
 ### Initialization ###
 
-Source functions for slides
+Source functions for slides.   There are a number of functions in this file to implement the methods.  
 ```{r source}
 source("behren-fisher.R")
 myblue = rgb(86,155,189, name="myblue", max=256)
@@ -26,7 +26,7 @@ myblue = rgb(86,155,189, name="myblue", max=256)
 
 ### MCMC Sampling ###
 
-Run the MCMC sampler using R functions (this does not require `jags`.  This uses numerical integration to obtain the marginal likelihoods that enter into the Bayes factors and MCMC sampling to sample from the posterior distributions under H2.   Under H1 the difference is exactly 0 so no simulations are needed.  The `plot=T` option will produce a plot of the posterior distribution under H2 with the pointmass at 0 under H1 and with a shaded area corresponding to the 95% HPD region combining draws from H1 and H2.
+Run the MCMC sampler using R functions (this does not require `jags`.  This uses numerical integration to obtain the marginal likelihoods that enter into the Bayes factors and MCMC sampling to sample from the posterior distributions under H2.   Under H1 the difference is exactly 0 so no simulations are needed.  The `plot=T` option will produce a plot of the posterior distribution under H2 with the pointmass at 0 under H1 and with a shaded area corresponding to the 95% HPD region combining draws from H1 and H2.  
 
 
 ```{r sim}
@@ -50,7 +50,7 @@ This is based on simulating from the posterior distribution so the credible inte
 
 ### Using JAGS ###
 
-If you have installed `jags` on your computer, then the following option using `jags=TRUE` is much faster, although the estimates of the posterior probability are subject to Monte Carlo variation.  To reduce that you may need to use a larger number of simulations.
+If you have installed `jags` on your computer, then the following option using `jags=TRUE` is much faster, although the estimates of the posterior probability are subject to Monte Carlo variation.  To reduce that you may need to use a larger number of simulations.  If you have not installed `jags` comment out the chunk below.
 
 ```{r jags}
 set.seed(5)
