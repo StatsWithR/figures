@@ -1,6 +1,6 @@
-This is XeTeX, Version 3.14159265-2.6-0.99996 (TeX Live 2016/MacPorts 2016_0) (preloaded format=xelatex 2016.7.10)  19 JUL 2016 14:00
+This is XeTeX, Version 3.14159265-2.6-0.99996 (TeX Live 2016/MacPorts 2016_0) (preloaded format=xelatex 2016.7.10)  28 JUL 2016 20:46
 entering extended mode
- restricted \write18 enabled.
+ \write18 enabled.
  %&-line parsing enabled.
 **4.3.1b_supp_comparing_two_proportions_with_BF.tex
 (./4.3.1b_supp_comparing_two_proportions_with_BF.tex
@@ -758,27 +758,27 @@ File: se-ascii-print.def 2016/05/16 v1.11 stringenc: Printable ASCII characters
 )
 [1
 
-] [2]
-LaTeX Font Info:    Try loading font information for T1+aett on input line 134.
+] [2] [3]
+LaTeX Font Info:    Try loading font information for T1+aett on input line 158.
 
  (/opt/local/share/texmf-texlive/tex/latex/ae/t1aett.fd
 File: t1aett.fd 1997/11/16 Font definitions for T1/aett.
-) [3] [4]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 137.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 137.
+) [4]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 175.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 175.
 
 (./4.3.1b_supp_comparing_two_proportions_with_BF.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 137.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 137.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 137.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 175.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 175.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 175.
  ) 
 Here is how much of TeX's memory you used:
  20267 strings out of 494776
  359449 string characters out of 6165553
- 408460 words of memory out of 5000000
+ 409460 words of memory out of 5000000
  23278 multiletter control sequences out of 15000+600000
  32941 words of font info for 55 fonts, out of 8000000 for 9000
  430 hyphenation exceptions out of 8191
- 55i,10n,56p,469b,350s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 55i,10n,56p,490b,350s stack positions out of 5000i,500n,10000p,200000b,80000s
 
 Output written on 4.3.1b_supp_comparing_two_proportions_with_BF.pdf (4 pages).

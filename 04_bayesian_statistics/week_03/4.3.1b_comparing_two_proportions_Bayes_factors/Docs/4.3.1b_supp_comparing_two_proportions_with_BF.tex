@@ -41,7 +41,8 @@ where each of the $X_i$ are independent and identically distributed with $P(X_i 
 $$p(\theta) = \frac{\theta^{a-1} (1 - \theta)^{b-1}}{B(a,b)}$$
 where $B(a,b)$ is known as the Beta function and is the normalizing constant of the
 Beta distribution \footnote{the Beta function is formally defined as   
-$B(a,b) \equiv \int_0^1 \theta^{a - 1} (1 - \theta)^{b-1}$.}
+$B(a,b) \equiv \int_0^1 \theta^{a - 1} (1 - \theta)^{b-1}$ so that 
+$$\int_0^1 \frac{\theta^{a - 1} (1 - \theta)^{b-1}}{B(a,b)} = 1.$$}
  
 
 Bayes Theorem says that
@@ -53,7 +54,7 @@ Starting with  Bayes Theorem for the posterior density
 \begin{align*}
 p(\theta \mid X_1, \ldots, X_n)  & =  \frac{p(\theta) p(X_{1}, \ldots, X_{n} \mid \theta)}{p(X_1, \ldots, X_n)} \\
 \intertext{we  begin by substituting the distributions of data and prior}
- & \propto \frac{\prod_i^n [\theta^{X_i} (1 - \theta^{1 - X_i})] \theta^{a - 1}  (1 - \theta)^{b -1} } {B(a,b)} \\
+ & \propto \frac{\prod_{i=1}^n [\theta^{X_i} (1 - \theta)^{1 - X_i}] \theta^{a - 1}  (1 - \theta)^{b -1} } {B(a,b)} \\
  & = \frac{\theta^{\sum_{i=1}^n X_i} (1 - \theta)^{\sum_{i=1}^n (1 - X_i) } \theta^{a - 1}  (1 - \theta)^{b -1} } {B(a,b)}.
  \intertext{Letting $Y = \sum_{i=1}^n X_i$ and combining terms in the exponent, we have}
  & \frac{\theta^{Y + a - 1} (1 - \theta)^{n - Y + b - 1}} {B(a,b)}.
@@ -61,7 +62,7 @@ p(\theta \mid X_1, \ldots, X_n)  & =  \frac{p(\theta) p(X_{1}, \ldots, X_{n} \mi
 p(\theta \mid X_1, \ldots, X_n) & = \frac{\theta^{Y + a - 1} (1 - \theta)^{n - Y + b - 1}} {B(a,b)} \color{red}{\frac{B(a,b)}{B(Y + a, n - Y + b) }} \\
 \intertext{where the $B(A,b)$ term cancels from numerator and denominator to obtain the normalized posterior density for $\theta$.}
 \end{align*}
-Since the predictive distribution is the denominator in Bayes Theorem, we have that the marginal distribution is the inverse of the term in red:
+Since the prior predictive distribution  or marginal distribution of the data is the denominator in Bayes Theorem, we have that the marginal distribution is the inverse of the term in red:
 \begin{equation}
 p(X_1, \ldots, X_n) = \frac{B(\sum X_i + a, n - \sum X_i + b) }{B(a,b)}
 \end{equation}
@@ -70,6 +71,12 @@ $$
 p(\theta \mid X_1, \ldots, X_n)  = \frac{\theta^{\sum X_i + a - 1} (1 - \theta)^{n - \sum X_i + b - 1}} {B(\sum X_i + a,n - \sum X_i + b)}. 
 $$
 
+From this we have the updating rule for Beta distributions from Week 2: if
+under the prior, $$\theta \sim B(a_0, b_0)$$  (using the subscript $0$ to suggest no data), then after seeing $n$ observations from a Bernoulli($\theta$) with $Y$ "successes" and $n-Y$ "failures" the posterior distribution is
+$$
+\theta \mid Y, n \sim B(a_n, b_n)
+$$
+where $a_n = a_0 + Y$ and $b_n = b_0 + n-Y$ adding the prior and observed successes and the prior and observed failures.  
 
 \section*{Application to Bayes Factors}
 
@@ -124,14 +131,45 @@ where $\lbeta$ is the log of the Beta function.
 
 \section*{Hyperparameters}
 
-G\^unel and Dickkey (1974) suggest that the prior hyperparameters under $H_1$ be obtained from the hyperparameters under $H_2$ by collapsing, so that $a = a_A + a_B$ and $b = b_A + b_B$.   Their approach generalizes the special case here to contingency tables with Poisson or multinomial sampling.
+Consonni et al (2013) suggest setting $a_{A} = b_{A} = a_B = b_B$ (symetric Beta) and that $a_A = a_B = b_A = b_B$ under $H_2$ and that $a = a_A + a_B$ and $b = b_A + b_B$ under $H_1$ so that the same amount of prior information is imposed under $H_1$ and $H_2$.  
 
-For a default prior, we may use the Jeffrey's or reference prior within each group under $H_2$, then $a_A = a_B = b_A = b_B = 1/2$ resulting in $a = 1, b=1$ or a Uniform distribution for $\theta$ under $H_1$. 
+One approach for deriving this is to think about the two independent sources of information for $\theta_A$ and $\theta_B$ under $H_1$. One way to interpret the hyper parameters of a Beta distribution is as psuedo or imaginary observations. 
+If we started with $a_A$ prior successes and $b_A$ failures and updated this with an improper prior distriubtion of the form 
+$$p(\theta) \propto \theta^{-1} (1 - \theta)^{-1}$$ then the 
+posterior distribution based on the psuedo observations would be
+$$\theta^{a_A - 1} \theta^{b_A -1}
+$$
+which hopefully is recognizable as a $B(a_A, b_A)$.   If we now use this as our prior and update it with the psuedo observations $a_B$ and $b_B$, then this new posterior will be proportional to 
+$$
+\theta^{a_A + a_B -1} (1 - \theta)^{b_A + b_B -1}
+$$
+or a $B(a_A + a_B, b_A + b_B)$ distribution.
+
+
+
+For a default prior, we may use the Jeffrey's or reference prior within each group under $H_2$, then $a_A = a_B = b_A = b_B = 1/2$ resulting in $a = 1, b=1$ or a Uniform distribution for $\theta$ under $H_1$.  If a reference prior under $H_1$ is desired, then  $a_A = a_B = b_A = b_B = 1/4$.   
+
+
+
+\section*{Alternative Priors}
+
+Consonni et al (2013) generalize this default Bayes factor to create what they refer to as a "balanced objective"  prior that addresses 1) problems with conventional Bayes factors that may inflate  the evidence for the smaller model when the prior on the larger model is too diffuse as and 2) issues where the evidence in favor of the smaller model accumulates at a slower rate as the sample size increases when the smaller model is true.
+
+G\^unel and Dickkey (1974) suggest alternative prior distributions in this and the more general problem of contingency tables.  These are available in the {\tt R} package {\tt BayesFactor}  (see  Jamil et al (2016) for more details.)
 
 \section*{References}
+Consonni, G., Forster, J.J. and La Rocca, L. (2013) The Whetstone and the Alum Block:  Balanced Objective Bayesian Comparison of Nested Models for Discrete Data. {\it Statistical SCience} 28: 398--423.
+\url{https://arxiv.org/pdf/1310.0661v1.pdf}
+
+\vspace{12pt}
+\noindent
 G\^unel E. and Dickey, J. (1974) Bayes factors for independence in contingency tables
 {\it Biometrika}  61 (3): 545-557.
 doi: 10.1093/biomet/61.3.545 \url{http://biomet.oxfordjournals.org/content/61/3/545.short}
 http://biomet.oxfordjournals.org/content/61/3/545.short
+
+\vspace{12pt}
+\noindent
+Jamil, T., Ly, A., Morey, R.D. et al. (2016). Behavioral  Research Methods.  doi:10.3758/s13428-016-0739-8  \url{http://link.springer.com/article/10.3758\%2Fs13428-016-0739-8}
 
 \end{document}
