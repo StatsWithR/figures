@@ -94,3 +94,26 @@ out
 ```
 
 From this we can obtain the posterior probability using `out$postprobH0` and the Bayes factor using `out$BF.H02H1`.
+
+## Advanced Topic: Beyond the Video
+
+Consonni et al (2013) provide generalizations of this default Bayes factor for testing in Binomial data to address tow problems that arise with conventional Bayes factors.  The first is that if the prior distribution under the more complex model is too diffuse (what we will see coming up as Bartlett's paradox) then the Bayes factor may inflate evidence for the simpler model.  This can also occur in large sample sizes and is know as Lindley's paradox that we will discuss later.  The second is that when the simpler model is actually true, the evidence may accumpulate slowly in favor of the simple model, even with large sample sizes.
+Consonni et al consider intrinsic priors (a way of converting a non-informative prior in to a proper distribution) that address the Lindley/Bartlett paradox while combining that with moment based priors or non-local priors that provide faster accumulation of evidence when the simpler model is true, leading to what they refer to as a "balanced objective prior".  The priors and Bayes factors are pretty complicated, but we can implement numerically.
+
+Let's load the code and compute the BF for $H_2$ to $H_1$:
+```{r IM prior}
+source("BF-prop.R")
+BF10.IM(USASurvey[1,1], USASurvey[1,2], n[1], n[2], b=.5, h=1, t1=4, t2=4)
+1/BF10.IM(USASurvey[1,1], USASurvey[1,2], n[1], n[2], b=.5, h=1, t1=4, t2=4)
+
+```
+
+This provides even stronger evidence in favor of the simpler model that the probabilities are equal and illustrates that Bayes Factors may be quite sensitive to the choice of prior distribution on parameters.
+
+## Reference
+
+Consonni, G., Forster, J.J. and La Rocca, L. (2013) The Whetstone and the Alum Block:  Balanced Objective Bayesian Comparison of Nested Models for Discrete Data. *Statistical Science* 28: 398-423. DOI: 10.1214/13-STS433
+[https://arxiv.org/pdf/1310.0661v1.pdf](https://arxiv.org/pdf/1310.0661v1.pdf)
+
+
+
