@@ -75,13 +75,48 @@ A little more interpretable version with names:
 (crime.ZS$namesx[HPM$bestmodel +1])[-1]
 ```
 
+This model is stored in the output in position `r HPM$best` and can be extracted as
+```{r where}
+HPM$best
+```
+
+If we wanted to find the coefficients for this model for example, we could use the following:
+```{r coef HPM}
+
+crime.coef.ZS = coef(crime.ZS)
+crime.coef.ZS$conditionalmeans[HPM$best,]
+crime.coef.ZS$conditionalsd[HPM$best,]
+```
+to extract the posterior means and posterior standard deviations of the coefficients of the highest probability model.
+
+
 **median probability model:**
 ```{r}
 MPM = predict(crime.ZS, estimator="MPM")
+attr(MPM$fit, 'model')
 (crime.ZS$namesx[attr(MPM$fit, 'model') +1])[-1]
 ```
 
-Note that we can also extract the best model from the attribute in the fitted values as well.
+Note that we can also extract the best model from the attribute in the fitted values as well.   
+
+For obtaining fitted or predicted values,  the media probability model may not be part of the sample (in the general case without enumeration) so the fitted and predict code in BAS actually just refits this model initializing BAS at this model.  Here is actually what is under the hood in case you wanted to find coefficients for the MPM.
+
+
+```{r MPM model}
+crime.MPM = bas.lm(y ~ ., 
+                   data=UScrime,
+                   prior="ZS-null",
+                   modelprior=uniform(),
+                   bestmodel=crime.ZS$probne0 > .5, n.models=1) 
+```
+
+The logical condition `crime.ZS$probne0` provides a  vector of length `r crime.ZS$n.vars` of the inclusion indicators of the median probabilty model, e.g. where the probabilty that the coefficient is not 0 is greater than 0.5.  The option `n.models = 1` fits just this model.
+
+Using the `coef` function applied to just this model we can extract the coefficients for the HPM model:
+
+```{r coef MPM}
+coef(crime.MPM)
+```
 
 **best predictive model:**
 
@@ -122,7 +157,7 @@ Which state has the highest predicted crime rate?  the lowest?
 best = which.min(BPM$fit)
 crime.ZS$X[best, BPM$bestmodel]
 ```
-What characteristics lead to the lowest rates?   (where do the X values fall inthe distribution of the covariantes - are they at the extremes?)
+What characteristics lead to the lowest rates?   (where do the X values fall in the distribution of the covariantes - are they at the extremes?)
 
 Using the `newdata` option as with the `predict` function in `lm`, you can predict at new values of the covariates (OK in this case the data frame is the same, so it is the same as the insample prediction).  The code below illustrates using BMA and Monte Carlo simulation to obtain the intervals.
 
@@ -132,4 +167,5 @@ crime.conf.fit = confint(BPM, parm="mean")
 crime.conf.pred = confint(BPM, parm="pred")
 cbind(BPM$fit, crime.conf.fit, crime.conf.pred)
 ```
+
 
