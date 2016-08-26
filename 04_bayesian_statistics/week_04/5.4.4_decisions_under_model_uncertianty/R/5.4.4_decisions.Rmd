@@ -150,7 +150,21 @@ cbind(BPM$fit, crime.conf.fit, crime.conf.pred)
 
 ```
 
-Which state has the highest predicted crime rate?  the lowest?   
+Finding the coefficients of the BPM is similar to the HPM:
+
+```{r BPM coef}
+# location of BPM;
+
+BPM$best
+crime.coef.ZS$conditionalmeans[BPM$best,]
+crime.coef.ZS$conditionalsd[BPM$best,]
+
+```
+Note that this model conditional on the choice of `X` used for fitting or prediction in deciding which is best in the code.
+
+
+* * *
+From the output we can ask which state has the highest predicted crime rate?  the lowest?   
 
 ```{r min}
 # lowest 
@@ -159,13 +173,14 @@ crime.ZS$X[best, BPM$bestmodel]
 ```
 What characteristics lead to the lowest rates?   (where do the X values fall in the distribution of the covariantes - are they at the extremes?)
 
+### Prediction with a new data set
+
 Using the `newdata` option as with the `predict` function in `lm`, you can predict at new values of the covariates (OK in this case the data frame is the same, so it is the same as the insample prediction).  The code below illustrates using BMA and Monte Carlo simulation to obtain the intervals.
 
 ```{r}
-BPM = predict(crime.ZS, UScrime, estimator="BMA", se.fit=TRUE, nsim=10000)
-crime.conf.fit = confint(BPM, parm="mean")
-crime.conf.pred = confint(BPM, parm="pred")
+BMA = predict(crime.ZS, UScrime, estimator="BMA", se.fit=TRUE, nsim=10000)
+crime.conf.fit = confint(BMA, parm="mean")
+crime.conf.pred = confint(BMA, parm="pred")
 cbind(BPM$fit, crime.conf.fit, crime.conf.pred)
 ```
-
 
