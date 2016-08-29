@@ -81,7 +81,7 @@ plot(x, dbeta(x, USASurvey[1,"Male"]+ USASurvey[1,"Female"] + aO[1],
 lines(x, dbeta(x, USASurvey[1,"Male"] + aA.M[1], 
                n[1]-USASurvey[1,"Male"] + aA.M[2]), type="l", col=myblue,
      lwd=3)
-# add prior for female under HA
+# add posterior for female under HA
 lines(x, dbeta(x, USASurvey[1,"Female"] + aA.F[1],  
                n[2] - USASurvey[1,"Female"] + aA.F[2]), 
       col="orange", lwd=3)
