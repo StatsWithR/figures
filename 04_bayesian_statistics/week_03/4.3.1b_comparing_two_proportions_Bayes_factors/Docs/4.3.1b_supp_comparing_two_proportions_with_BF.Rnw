@@ -109,7 +109,7 @@ and as before are independent.  If we assign independent Beta priors to the $\th
 \theta_B & \sim \Beta(a_B, b_B)
 \end{align*}
 then it is straightworward to show that we may apply the result about the predictive distribution to each group separately and that the joint predictive distribution is the product of the predictive distributions within each group:
-$$p(\data \mid H_1) = \frac{B(Y_A + a_A, n_A - Y_A  + b_A)} {B(a_A,b_A)}\times 
+$$p(\data \mid H_2) = \frac{B(Y_A + a_A, n_A - Y_A  + b_A)} {B(a_A,b_A)}\times 
 \frac{B(Y_B + a_B, n_B - Y_B  + b_B)} {B(a_B,b_B)}
 $$
 
