@@ -18,15 +18,15 @@ n=c(22,22)
 
 ### Initialization ###
 
-Source functions for slides.   There are a number of functions in this file to implement the methods.  
+Source functions for slides.   There are a number of functions in this file to implement the methods (some of these have been cleaned up and added to the `statsr` package).  
 ```{r source}
 source("behren-fisher.R")
 myblue = rgb(86,155,189, name="myblue", max=256)
 ```
 
 ### MCMC Sampling ###
-
-Run the MCMC sampler using R functions (this does not require `jags`.  This uses numerical integration to obtain the marginal likelihoods that enter into the Bayes factors and MCMC sampling to sample from the posterior distributions under H2.   Under H1 the difference is exactly 0 so no simulations are needed.  The `plot=T` option will produce a plot of the posterior distribution under H2 with the pointmass at 0 under H1 and with a shaded area corresponding to the 95% HPD region combining draws from H1 and H2.  
+We are interested in the posterior distribution of $\mu_A - \mu_B$ under $H0$ (difference is exactly zero)  and under $H1$, the difference is not zero. 
+We will run an MCMC sampler using R functions (this does not require `jags`).  This uses numerical integration using the R package `cubature` to obtain the marginal likelihoods that enter into the Bayes factors and then MCMC sampling to sample from the posterior distributions of parameters under H1.   Under H0 the difference is exactly 0 so no simulations are needed for $\mu_A - \mu_B$.  The `plot=T` option will produce a plot of the posterior distribution under H1 with the pointmass at 0 under H0 and with a shaded area corresponding to the 95% HPD region combining draws from H0 and H1.  *The hypotheses are labeled H0 and H1 here to match with this function output, while the video uses H1 and H2*.
 
 
 ```{r sim}
@@ -48,7 +48,7 @@ This is based on simulating from the posterior distribution so the credible inte
 
 
 
-We can also compute the credible interval conditional on H1 from the output.
+We can also compute the credible interval conditional on H1 that the means are different from the output using teh HPDinterval function from `coda`.
 
 ```{r ci-H2}
 HPDinterval(as.mcmc(out$diff[out$diff != 0]))
@@ -61,14 +61,14 @@ The sample mean under H1 is
 mean(out$diff[out$diff != 0])
 ```
 
-The overall mean based on averaging over the two hypotheses is obtained by taking the mean under H0 times the posterior probabilty of H0 plus the posterior mean under H1 times the posterior  probabilty of H1.
+The overall mean based on averaging over the two hypotheses is obtained by taking the mean under H0 times the posterior probabilty of H0 plus the posterior mean under H1 times the posterior  probabilty of H1:
 
 ```{r post mean}
 
 out$post.prob.H0*0 + 
   (1 - out$post.prob.H0)*mean(out$diff[out$diff != 0])
 ```
-
+Because there is substantial probability that the difference is zero this linear combination of the posterior means is shrunk towards the poeterior/prior mean under H0 of zero.
 
 ### Using JAGS ###
 
