@@ -34,6 +34,11 @@
 \maketitle
 
 
+<<setup>>=
+myblue = rgb(86,155,189, name="myblue", max=256)
+mydarkgrey = rgb(.5,.5,.5, name="mydarkgrey", max=1)
+par(mar=c(5, 9, 2, 2), col.lab=mydarkgrey, col.axis=mydarkgrey, col=mydarkgrey)
+@
 
 
 
@@ -41,20 +46,46 @@
 %A SurveyUSA poll on parents perceptions of bullying of their children
 %\end{beamercolorbox}
 
-<<data, echo=FALSE>>=
-zinc=read.csv("zinc.csv", header=T)
-
-@
-
-
 
 
 \section*{Paired Data}
-In the example in the video,  we have $n$ paired observations $Y_{iB}$ and $Y_{iS}$  for $i = 1, \ldots, n$ representing the concentrations of zinc at the bottom and surface, respectively. Rather than working with the two groups of observations, we will work with the differences $D_{i} \equiv Y_{iB} - Y_{iS}$ to make inference about the difference in the means $\mu_1 - \mu_2 \equiv \mu$.   
+In the example in the video,  we have $n = 10$ paired observations $Y_{iB}$ and $Y_{iS}$  for $i = 1, \ldots, n$ representing the concentrations of zinc at the bottom and surface, respectively.
+
+<<data, echo=F>>=
+zinc =  read.table("https://onlinecourses.science.psu.edu/stat500/sites/onlinecourses.science.psu.edu.stat500/files/data/zinc_conc.txt", 
+                   header=T, fileEncoding="UTF-16LE")
+zinc$difference = zinc$bottom - zinc$surface
+@
+
+
+Rather than working with the two groups of observations, we will work with the differences $D_{i} \equiv Y_{iB} - Y_{iS}$ to make inference about the difference in the means $\mu_1 - \mu_2 \equiv \mu$ converting this problem to a one group Normal problem.   
+
+<<table>>=
+zinc
+@
 
 We will make the same assumptions about the distributions of the differences as in the case of the frequentist paired t-test.  That is conditional on the parameters $\mu$ and $\sigma^2$
 the observed differences are independently and identically distributed from a  normal distribution expressed notationally as
-$$D_i \mid \mu, \sigma^2 \iid \No(\mu, \sigma^2)$$ leading to a likelihood function 
+$$D_i \mid \mu, \sigma^2 \iid \No(\mu, \sigma^2)$$.  To check the assumption of normality we can look at a histogram or normal quantile plot of the sampled differences. 
+
+<< hist, echo=FALSE, fig=TRUE, width=6, height=3>>=
+par(mfrow=c(1,2))
+# histogram
+hist(zinc$difference, col=myblue,
+     xlab="difference", lwd=3, ylab="density",
+     main="", prob=T, axes=F)
+axis(1,col=mydarkgrey)
+axis(2,col=mydarkgrey)
+
+# Normal quantile plot
+qqnorm(zinc$difference, col=myblue, pch=16, main="",
+       xlab="theoretical quantiles",
+       ylab="sample quantiles")
+qqline(zinc$difference)
+@
+
+\subsection*{Likelihood}
+The normal sampling model leads to a likelihood function 
 $$
 {\cal{L}}(\mu, \sigma^2) = \prod_{i = 1}^{n} \frac{1}{\sqrt{\sigma^2 2 \pi}} \exp{\left( - \frac{1}{2}\frac{(D_i - \mu)^2}{\sigma^2} \right)} 
 $$
@@ -65,20 +96,20 @@ and is independent of
 $$ 
 s^2 \mid \sigma^2 \sim  \Ga\left(\frac{n - 1}{2},  \frac{n-1}{2 \sigma^2}\right)
 $$
-where $s^2$ is the sample variance, $s^2 = \sum(D_i - \bar{D})^2/(n-1)$, and $\Ga$ is a gamma distribution.  We will use the rate parameterization of the gamma, so if $Y \sim \Ga(a, b)$ then $Y$ has a probability density function 
+where $s^2$ is the sample variance, $s^2 = \sum(D_i - \bar{D})^2/(n-1)$, and $\Ga$ is a gamma distribution.  Note, we will use the rate parameterization of the gamma, so if $Y \sim \Ga(a, b)$ then $Y$ has a probability density function 
 $$
 p(y) = \frac{1}{\Gamma(a)} b^a y^{a - 1} e^{- y b} 
 $$
-with expected value $q/b$.  From this we can see that $\E[s^2] = \sigma^2$ so that the sample variance is an unbiased estmator of the population variance. {\it Note that the rate parameterization that we are using here is different from the scale parameterization that is used in Week 2 for the Conjugate Poisson-Gamma}.  The rate parameterization leads to easier updating rules as we will see.   
+with expected value $a/b$.  From this we can see that $\E[s^2] = \sigma^2$ so that the sample variance is an unbiased estmator of the population variance. {\it Note that the rate parameterization that we are using here is different from the scale parameterization that is used in Week 2 for the Conjugate Poisson-Gamma}.  The rate parameterization leads to easier updating rules as we will see.   
 
 
-For ease of derivation, we are going to create a new parameter $\phi \equiv 1/\sigma^2$ to help with specifing a conjugate prior distribution.  In the new parameterization our two statistics have the distibution
+For ease of derivation, we are going to create a new parameter $\phi \equiv 1/\sigma^2$ to help with specifing a conjugate prior distribution.  The paramter $\phi$ is known as the precision;  if the variance is small we have high precision, while if the variance is small we have more uncertainty  and low precision.  In the new parameterization our two statistics have sampling distibutions
 
 \begin{align}
  \bar{D} \mid \mu, \phi & \sim \No\left(\mu,  1/(\phi n)\right) \\
  s^2_d \mid \phi & \sim  \Ga(\nu/2,  \nu \phi/2 )
 \end{align}
-where $\nu = n-1 $ is the usual degrees of freedom leading to a likelood function that is 
+where $\nu = n-1 $ is the usual degrees of freedom leading to a likelood function based on taking the product of the independent distributions 
 $$
 {\cal{L}}(\mu, \phi) \propto (n\phi)^{1/2} \frac{1}{\sqrt{(2 \pi)}} 
 \exp\left\{- \frac 1 2  n \phi (\bar{D} - \mu)^2 \right\}
@@ -86,18 +117,37 @@ $$
 $$
 
 Note:  you could just start with the independent normal samples and through some algebra rearrange to get to this.
+
 \section*{Conjugate Normal-Gamma Prior Distribution}
 
 
-For Bayesian inference we need to assign prior distributions to all of the unknown parameters under all hypotheses. As a first attempt, conjugate prior distributions are a convenient choice or as we will encounter later provide building blocks for more complex distributions. Recall a conjugate prior distribution is one where the posterior distribution and the prior distribution are in the same family.  Conditional on $\sigma^2$ (or $\phi$ now), the conjugate prior for $\mu$ is a normal distribution,  
+For Bayesian inference we need to assign prior distributions to all of the unknown parameters under all hypotheses. As a first attempt, conjugate prior distributions are a convenient choice or as we will encounter later provide building blocks for more complex distributions. Recall a conjugate prior distribution is one where the posterior distribution and the prior distribution are in the same family. 
+
+\subsection*{Conjugate Prior and Posterior for $\mu$ given $\phi$}
+
+In Week 2 we studied the conjugate prior for a normal mean assuming that $\sigma^2$ or $\phi$ was known.   While in this case the variance is unknown, 
+conditional on $\sigma^2$ (or $\phi$ now), the conjugate prior for $\mu$ given $\phi$ is a normal distribution,  
 $$ \mu \mid \phi \sim \No \left(m_0, \frac{1}{n_0 \phi} \right)
 $$
 where $m_0$ is the prior mean and $n_0$ is a hyperparameter that is used to represent
-how concentrated or less concentrated the distribution is about $m_0$, and may be
+how concentrated or less concentrated the distribution is about $m_0$ relative to the precision $\phi$, and may be
 thought of as a prior imaginary sample size upon which the prior distribution is 
 based if there are no historical observations. Taking $n_0 = 1$ implies that our prior distribution is worth the 
-equivalent of one observation.  (For review see Week 2 videos/lab about conjugate priors)
+equivalent of one observation.  
 
+Bayes theorem in proportional form leads to 
+\begin{align}
+p(\mu \mid \phi, \data)  \propto & {\cal{L}}(\mu, \phi) p(\mu \mid \phi) \\
+& =  (n\phi)^{1/2} \frac{1}{\sqrt{(2 \pi)}} 
+\exp\left\{- \frac 1 2  n \phi (\bar{D} - \mu)^2 \right\}
+p(s^2 \mid \phi) \\
+& \cdot
+(n_0\phi)^{1/2} \frac{1}{\sqrt{(2 \pi)}} \exp\left\{- \frac 1 2  n_0 \phi (\mu - m_0)^2 \right\}
+\intertext{where we have left the sampling distribution for $s^2$ as a density as it does not involve $\mu$. Ignoring constants that do not involve $\phi$ or $\mu$ we may simplify further} \\
+& \propto  \phi^{1/2}  \exp\left\{- \frac 1 2  n \phi (\bar{D} - \mu)^2  - \frac 1 2  n_0 \phi (\mu - m_0)^2 \right\}  \left(\phi^{1/2} p(s^2 \mid \phi) \right)
+\end{align}
+where the above expression includes the sum of two quadratic expressions in the exponential.   This almost looks like a normal. Can these be combined to form one quadtric expression that looks like a normal density?  Yes!   This involves expanding  the quadratics and 
+\subsection{Conjugate prior for $\phi$}
 Since $\sigma^2$ and $\phi$ can only take on values greater than zero and are continuous rather than discrete,  any reasonable prior distribution needs to incorporate those constraints.  Out of the distributions that we have encountedred so far, the gamma distribution fits the bill and is in fact the conjugate prior distribution for $\phi$.  We will use the following parameterization
 $$
 \phi \sim \Ga(\nu_0/2, \nu_0 s^2_0/2)

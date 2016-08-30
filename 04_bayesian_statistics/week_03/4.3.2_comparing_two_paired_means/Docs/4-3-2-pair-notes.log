@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99996 (TeX Live 2016/MacPorts 2016_1) (preloaded format=xelatex 2016.7.10)  29 AUG 2016 01:24
+This is XeTeX, Version 3.14159265-2.6-0.99996 (TeX Live 2016/MacPorts 2016_1) (preloaded format=xelatex 2016.7.10)  30 AUG 2016 11:38
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -738,11 +738,19 @@ LaTeX Info: Redefining \nameref on input line 31.
 ABD: EveryShipout initializing macros (./4-3-2-pair-notes-concordance.tex
 \pdfoutput=\count144
 )
-LaTeX Font Info:    Try loading font information for T1+aess on input line 54.
+LaTeX Font Info:    Try loading font information for T1+aett on input line 39.
+
+(/opt/local/share/texmf-texlive/tex/latex/ae/t1aett.fd
+File: t1aett.fd 1997/11/16 Font definitions for T1/aett.
+)
+LaTeX Font Info:    Try loading font information for T1+aess on input line 82.
 
 (/opt/local/share/texmf-texlive/tex/latex/ae/t1aess.fd
 File: t1aess.fd 1997/11/16 Font definitions for T1/aess.
 )
+File: 4-3-2-pair-notes-hist.pdf Graphic file (type QTm)
+
+<use  "4-3-2-pair-notes-hist.pdf" >
 (/opt/local/share/texmf-texlive/tex/generic/oberdiek/se-ascii-print.def
 File: se-ascii-print.def 2016/05/16 v1.11 stringenc: Printable ASCII characters
 
@@ -750,30 +758,41 @@ File: se-ascii-print.def 2016/05/16 v1.11 stringenc: Printable ASCII characters
 [1
 
 ] [2]
-LaTeX Font Info:    Try loading font information for TS1+aer on input line 124.
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 149.
 
 
-(/Library/Frameworks/R.framework/Resources/share/texmf/tex/latex/ts1aer.fd
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\phi' on input line 149.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 149.
+
+[3]
+LaTeX Font Info:    Try loading font information for TS1+aer on input line 176.
+
+ (/Library/Frameworks/R.framework/Resources/share/texmf/tex/latex/ts1aer.fd
 File: ts1aer.fd 
 )
 LaTeX Font Info:    Font shape `TS1/aer/m/n' in size <10.95> not available
-(Font)              Font shape `TS1/cmr/m/n' tried instead on input line 124.
-
-[3] [4] [5]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 207.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 207.
+(Font)              Font shape `TS1/cmr/m/n' tried instead on input line 176.
+[4] [5] [6]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 259.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 259.
  (./4-3-2-pair-notes.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 207.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 207.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 207.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 259.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 259.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 259.
  ) 
 Here is how much of TeX's memory you used:
- 20224 strings out of 494776
- 358321 string characters out of 6165553
- 407367 words of memory out of 5000000
- 23247 multiletter control sequences out of 15000+600000
- 32613 words of font info for 48 fonts, out of 8000000 for 9000
+ 20252 strings out of 494776
+ 358792 string characters out of 6165553
+ 407368 words of memory out of 5000000
+ 23268 multiletter control sequences out of 15000+600000
+ 33256 words of font info for 50 fonts, out of 8000000 for 9000
  430 hyphenation exceptions out of 8191
- 55i,10n,56p,570b,350s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 55i,10n,56p,570b,406s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on 4-3-2-pair-notes.pdf (5 pages).
+Output written on 4-3-2-pair-notes.pdf (6 pages).
