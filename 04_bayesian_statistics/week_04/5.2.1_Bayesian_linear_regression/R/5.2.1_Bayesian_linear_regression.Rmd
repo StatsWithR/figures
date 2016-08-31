@@ -31,7 +31,7 @@ abline(beta, lwd=4, col=1)
 
 ### Posterior distribution using the reference prior###
 
-We will use `lm` to obtain the OLS estimates which provide the posterior mean and standard deviation, while the `confint` function provides confidence intervals, which under the reference prior are 95% credible intervals.  The code below extracts them and just relabels the output.
+We will use `lm` to obtain the OLS estimates which provide the posterior mean and standard deviation.  The `confint` function provides 95% confidence intervals, which under the reference prior are equivalent to 95% credible intervals.  The code below extracts them and just relabels the output.
 
 
 ```{r}
@@ -66,18 +66,43 @@ legend(110,15, legend=c("Posterior mean", "95% CI for mean", "95% CI for predict
 ```
 
 ###Outliers###
-```{r}
+The code for calculating the probability of outliers or 
+$P(|\epsilon| > \kappa \sigma \mid data)$
+that is points that are more than $\kappa$ standard deviations away from zero in absolute value is based on the paper by Chaloner & Brant 1988 (available under the course resources).  This involves integration, so to simply life, we have  implemented this in the function `Bayes.outlier.prob` that can be sourced from the file `bayes-outliers.R`.   Feel free to dig into the code!   
+```{r Bayes Outliers}
 source("bayes-outliers.R")
 library(mvtnorm)
-outliers= Bayes.outlier.prob(bodyfat.lm)
+outliers= Bayes.outlier.prob(bodyfat.lm) 
+#The default is to consider k=3 standard deviations.
 prob.39 = outliers$prob.outlier[39]
 prob.39
 
+```
+
+```{r n, include=F}
 n = nrow(bodyfat)
+```
+
+With $\kappa = 3$ there may be a high probablity of at least one outlier in a large sample.  With n =  `r n`
+```{r at least one}
+# probability of no outliers
+(1 - (2*pnorm(-3)))^n
+# probability of at least one outlier
+1 - (1 - (2*pnorm(-3)))^n
+```
+
+the probability of at least one outlier is much larger than say the marginal probability that one point is an outlier of 0.05. 
+Rather than fix $\kappa$, we can fix the probability of no outliers and solve for a value of $\kappa$ such that the prior proobabilty of no outliers in a sample of $n$ is say 0.95 and use that in the funtion.
+```{r k}
 k = qnorm(.5 + .5*.95^(1/n))
+k
 outliers.no= Bayes.outlier.prob(bodyfat.lm, k=k)
 prob.no.39 = outliers.no$prob.outlier[39]
 prob.no.39
-
+```
+While this is not strikingly large it is much larger than the prior probability
+```{r}
+2*pnorm(-k)
 ```
 
+suggesting that case 39 is an outlier.
