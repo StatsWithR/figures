@@ -143,9 +143,25 @@ p(s^2 \mid \phi) \\
 & \cdot
 (n_0\phi)^{1/2} \frac{1}{\sqrt{(2 \pi)}} \exp\left\{- \frac 1 2  n_0 \phi (\mu - m_0)^2 \right\}
 \intertext{where we have left the sampling distribution for $s^2$ as a density as it does not involve $\mu$. Ignoring constants that do not involve $\phi$ or $\mu$ we may simplify further} \\
-& \propto  \phi^{1/2}  \exp\left\{- \frac 1 2  n \phi (\bar{D} - \mu)^2  - \frac 1 2  n_0 \phi (\mu - m_0)^2 \right\}  \left(\phi^{1/2} p(s^2 \mid \phi) \right)
+p(\mu \mid \phi, \data) & \propto  \phi^{1/2}  \exp\left\{- \frac 1 2  n \phi (\bar{D} - \mu)^2  - \frac 1 2  n_0 \phi (\mu - m_0)^2 \right\}  \left(\phi^{1/2} p(s^2 \mid \phi) \right)
 \end{align}
-where the above expression includes the sum of two quadratic expressions in the exponential.   This almost looks like a normal. Can these be combined to form one quadtric expression that looks like a normal density?  Yes!   This involves expanding  the quadratics and 
+where the above expression includes the sum of two quadratic expressions in the exponential.   This almost looks like a normal. Can these be combined to form one quadtric expression that looks like a normal density?  Yes!   
+Taking the a normal distriution for a paramter $\mu$ with mean $m$ and precision $p$, the quadratic term inthe exponetial may be expanded as
+$$p(\mu - m)^2 = p\mu^2 - 2 p \mu m + p m^2$$
+where we can read off that the precision is the term that multiplies the quadratic in $\mu$ and term that muliplies the linear term in $\mu$ is the product of  two times the mean and precision; if we know the precision, we can identify the mean.  The last term is the precision times the mean squared.
+For our poster,  need to expand  the quadratics and recombineterm to identify the new precision (the coefficent multiplying the quadratic in $\mu$) and the new mean  and completing the square or quadratic so that it may be factored.  Any left over terms will be independent of $\mu$ but may depend on $\phi$.  Applying to our case we have
+\begin{align*}
+- \frac 1 2  n \phi (\bar{D} - \mu)^2  - \frac 1 2  n_0 \phi (\mu - m_0)^2  & = 
+-\frac 1 2 \left(\phi( n + n_0) \mu^2 - 2 \phi \mu (n \bar{D} + n_0 m_0) + \phi (n \bar{D}^2 + n_0 m_0^2) \right)  
+\intertext{where we can read off that the posterio precision is $\phi(n + n_0$).   The linear term is not yet of the form of the posterior precision times the posterior mean, but if we multiply and divide by $n + n_0$ it will be}\\
+& = -\frac 1 2 \left(\phi( n + n_0) \mu^2 - 2 \phi ( n + n_0) \mu \frac{(n \bar{D} + n_0 m_0) } {n + n_0} + \phi (n \bar{D}^2 + n_0 m_0^2) \right)  
+\intertext{ so that we may identfy that the posterior mean is $(n \bar{D} + n_0 m_0) /(n + n_0)$}
+\end{align*}
+
+
+
+
+
 \subsection{Conjugate prior for $\phi$}
 Since $\sigma^2$ and $\phi$ can only take on values greater than zero and are continuous rather than discrete,  any reasonable prior distribution needs to incorporate those constraints.  Out of the distributions that we have encountedred so far, the gamma distribution fits the bill and is in fact the conjugate prior distribution for $\phi$.  We will use the following parameterization
 $$
