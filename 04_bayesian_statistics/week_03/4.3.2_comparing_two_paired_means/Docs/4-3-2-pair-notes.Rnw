@@ -150,20 +150,25 @@ where the above expression includes the sum of two quadratic expressions in the 
 Taking the a normal distriution for a paramter $\mu$ with mean $m$ and precision $p$, the quadratic term inthe exponetial may be expanded as
 $$p(\mu - m)^2 = p\mu^2 - 2 p \mu m + p m^2$$
 where we can read off that the precision is the term that multiplies the quadratic in $\mu$ and term that muliplies the linear term in $\mu$ is the product of  two times the mean and precision; if we know the precision, we can identify the mean.  The last term is the precision times the mean squared.
-For our poster,  need to expand  the quadratics and recombineterm to identify the new precision (the coefficent multiplying the quadratic in $\mu$) and the new mean  and completing the square or quadratic so that it may be factored.  Any left over terms will be independent of $\mu$ but may depend on $\phi$.  Applying to our case we have
+For our posterior,  we need to expand  the quadratics and recombineterm to identify the new precision (the coefficent multiplying the quadratic in $\mu$) and the new mean  and completing the square or quadratic so that it may be factored.  Any left over terms will be independent of $\mu$ but may depend on $\phi$.  Applying to our case we have
 \begin{align*}
 - \frac 1 2  n \phi (\bar{D} - \mu)^2  - \frac 1 2  n_0 \phi (\mu - m_0)^2  & = 
 -\frac 1 2 \left(\phi( n + n_0) \mu^2 - 2 \phi \mu (n \bar{D} + n_0 m_0) + \phi (n \bar{D}^2 + n_0 m_0^2) \right)  
-\intertext{where we can read off that the posterio precision is $\phi(n + n_0$).   The linear term is not yet of the form of the posterior precision times the posterior mean, but if we multiply and divide by $n + n_0$ it will be}\\
-& = -\frac 1 2 \left(\phi( n + n_0) \mu^2 - 2 \phi ( n + n_0) \mu \frac{(n \bar{D} + n_0 m_0) } {n + n_0} + \phi (n \bar{D}^2 + n_0 m_0^2) \right)  
-\intertext{ so that we may identfy that the posterior mean is $(n \bar{D} + n_0 m_0) /(n + n_0)$}
 \end{align*}
+where we can read off that the posterior precision is $\phi(n + n_0)$.   The linear term is not yet of the form of the posterior precision times the posterior mean (times 2), but if we multiply and divide by $n + n_0$ it will does satisy that
+ $$-\frac 1 2 \left(\phi( n + n_0) \mu^2 - 2 \phi ( n + n_0) \mu \frac{(n \bar{D} + n_0 m_0) } {n + n_0} + \phi (n \bar{D}^2 + n_0 m_0^2) \right)$$  
+ so that we may identfy that the posterior mean is $(n \bar{D} + n_0 m_0) /(n + n_0)$ which combined with the precision (or inverse variance) is enough to identy the conditional posterior distribution for $\mu$.  This leads to the result
+$$ \mu \mid \phi, \data \sim \No(m_n, (\phi n_n)^{-1})
+$$
+where $m_m = (n \bar{D} + n_0 m_0) /(n + n_0)$ a weighted average of the sample mean and the prior mean, and
+$n_n = n + n_0$ the sample and prior combined sample size.
 
 
 
 
 
-\subsection{Conjugate prior for $\phi$}
+
+\subsection*{Conjugate prior for $\phi$}
 Since $\sigma^2$ and $\phi$ can only take on values greater than zero and are continuous rather than discrete,  any reasonable prior distribution needs to incorporate those constraints.  Out of the distributions that we have encountedred so far, the gamma distribution fits the bill and is in fact the conjugate prior distribution for $\phi$.  We will use the following parameterization
 $$
 \phi \sim \Ga(\nu_0/2, \nu_0 s^2_0/2)
@@ -171,6 +176,8 @@ $$
 with hyperparameters  $\nu_0$ (the prior degrees of freedom) and a rate parameter $\nu_0 s^2_0$ where $s^2_0$ is the best prior estimate of $\sigma^2$  (based on real or imaginary data) with prior degrees of freedom $\nu_0$ with a density
 $$p(\phi) = \frac{1}{\Gamma{\nu_0/2}} (\nu_0 s^2_0 )^{\nu_0/2 -1} e^{- \phi \frac{\nu_0 s^2_0} {2}}
 $$
+
+\subsection*{Joint Postierior}
 Together these form what is called a {\bf Normal-Gamma}($m_0, n_0, \nu_0, s^2_0$) family of distributions for $\mu, \phi$:
 $$
 p(\mu, \phi) = \frac{(n_0 \phi)^{1/2}} {\sqrt{2\pi}} e^{- \frac{\phi n_0}{2} (\mu -m_0)^2} \frac{1}{\Gamma{\nu_0/2}} (\nu_0 s^2_0 )^{\nu_0/2 -1} e^{- \phi \frac{\nu_0 s^2_0} {2}}
@@ -216,7 +223,7 @@ $m_n \pm t_{1 - \alpha/2, \nu_n} s_n$
 
 {\bf To do: add derivation}
 
-\subsection{Reference Prior}
+\subsection*{Reference Prior}
 
 If you wish to use the Bayesian interpretation of probability, but want to try to be as objective as possible, you might think that a reasonable approache would be to construct your imaginary prior data letting your prior sample size and degrees of freedom go to zero.  A limiting case of the conjugate Normal-Gamma prior is what is refereed to as a reference prior for $\mu, \phi$ and corresponds to taking $m_0 = n_0 = s^2_0 = 0$ but letting $\nu_0 = -1$.  The negative prior degrees of freedom do not make any sense, but mathematically lead to 
 a posterior distribution for $\mu$ is 

@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.14159265-2.6-0.99996 (TeX Live 2016/MacPorts 2016_1) (preloaded format=xelatex 2016.7.10)  30 AUG 2016 20:51
+This is XeTeX, Version 3.14159265-2.6-0.99996 (TeX Live 2016/MacPorts 2016_1) (preloaded format=xelatex 2016.7.10)  31 AUG 2016 01:15
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -757,46 +757,31 @@ File: se-ascii-print.def 2016/05/16 v1.11 stringenc: Printable ASCII characters
 )
 [1
 
-] [2] [3]
-Overfull \hbox (21.56604pt too wide) in paragraph at lines 159--159
-[] 
- []
+] [2] [3] [4]
+LaTeX Font Info:    Try loading font information for TS1+aer on input line 199.
 
 
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 165.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `\phi' on input line 165.
-
-
-Package hyperref Warning: Token not allowed in a PDF string (Unicode):
-(hyperref)                removing `math shift' on input line 165.
-
-[4]
-LaTeX Font Info:    Try loading font information for TS1+aer on input line 192.
-
- (/Library/Frameworks/R.framework/Resources/share/texmf/tex/latex/ts1aer.fd
+(/Library/Frameworks/R.framework/Resources/share/texmf/tex/latex/ts1aer.fd
 File: ts1aer.fd 
 )
 LaTeX Font Info:    Font shape `TS1/aer/m/n' in size <10.95> not available
-(Font)              Font shape `TS1/cmr/m/n' tried instead on input line 192.
+(Font)              Font shape `TS1/cmr/m/n' tried instead on input line 199.
+
 [5] [6] [7]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 275.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 275.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 282.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 282.
  (./4-3-2-pair-notes.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 275.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 275.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 275.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 282.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 282.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 282.
  ) 
 Here is how much of TeX's memory you used:
- 20252 strings out of 494776
- 358792 string characters out of 6165553
- 407368 words of memory out of 5000000
- 23268 multiletter control sequences out of 15000+600000
+ 20249 strings out of 494776
+ 358778 string characters out of 6165553
+ 407367 words of memory out of 5000000
+ 23265 multiletter control sequences out of 15000+600000
  33256 words of font info for 50 fonts, out of 8000000 for 9000
  430 hyphenation exceptions out of 8191
- 55i,11n,56p,570b,350s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 55i,10n,56p,570b,342s stack positions out of 5000i,500n,10000p,200000b,80000s
 
 Output written on 4-3-2-pair-notes.pdf (7 pages).
