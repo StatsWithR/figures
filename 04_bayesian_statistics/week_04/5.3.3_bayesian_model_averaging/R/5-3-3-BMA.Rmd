@@ -27,14 +27,37 @@ You will need to install the `BAS` package from `CRAN` and load the library.
 
 ```{r BAS}
 library(BAS)
+```
+
+We will use a "prior" that leads to log  marginals corresponding to  BIC and treat all models as being equally likely  a priori.
+```{r model}
 cog_bas = bas.lm(kid_score ~ hs + iq + work + age,
                 prior="BIC",
                 modelprior=uniform(),
                 data=cognitive)
-
+cog_bas
+cog_bas$probne0
 ```
 
-To visualize the space of models, use the `image` function.
+Printing the object provides the marginal posterior inclusion probabilities. The marginal posterior inclusion probability is the probability that predictor variable $j$ is included in the model, $P(\gamma_j = 1 \mid Y)$, where $\gamma_j$ is the indicator that predictor $j$ is included in the model.  This is equivalent to saying  that the corresponding $\beta_j \neq 0$ or finding $P(\beta_j \neq 0 \mid Y)$. Under BMA, we can calculate this 
+
+$$P(\beta_j \neq 0 \mid Y) = \sum_m I(\beta_j \neq 0 \mid M_m) P(M_m \mid Y) $$
+
+or 
+
+$$P(\gamma_j = 1 \mid Y) = \sum_m I(\gamma_j = 1 \mid M_m) P(M_m \mid Y) $$
+
+which corresponds to adding up the posterior probabilities of all models where $\beta_j$ is not zero for the $j$th predictor. 
+We can also extract this directly from the object as
+```{r probne0}
+cog_bas$probne0
+```
+
+
+
+**Visualization of the Model Space**
+
+ To visualize the space of models (by default the top 20 models in terms of their posterior probabilities), we may use the `image` function.
 
 ```{r}
 image(cog_bas, rotate=F)
@@ -42,11 +65,16 @@ image(cog_bas, rotate=F)
 
 **Coefficient Summaries**
 
-To calculate the posterior distributions of the coefficients, we use the `coef` function create an object with posterior means and standard deviations using BMA.
+To calculate the posterior distributions of the coefficients, we use the `coef` function create an object with posterior means and standard deviations. 
 
 ```{r coefplot}
 cog_coef = coef(cog_bas)
+cog_coef
 ```
+
+Typing the name of the `coef` object returns the marginal posterior mean, standard deviation and posterior inclusion probabilities obtained by BMA.
+
+**Posterior Densities under BMA**
 
 To plot the posterior distributions of the four regression coefficents, use the `plot` function.
 ```{r}
@@ -72,9 +100,10 @@ confint(cog_coef, nsim=10000)
 
 *Note:  `BAS` currently centers all covariates.  This does not change the slope coefficients, however the intercept in all models is $\bar{Y}$.  *
 
-### Posterior inclusion probabilites ##
+### Posterior inclusion probabilities ##
+
 Finally calculate the probabiliy that the coefficient for age is zero.  The marginal posterior inclusion probabilities are stored in the `bas` object as `
-probne0`. 
+probne0` or as mentioned above shown via printing the bas object.
 
 ```{r prob}
 
