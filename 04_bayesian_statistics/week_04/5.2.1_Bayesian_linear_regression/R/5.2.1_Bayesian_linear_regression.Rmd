@@ -60,23 +60,41 @@ plot(bodyfat.lm, which=2)
 
 where the quantiles of the residuals (estimated errors) are plotted against their theoretical values or what we would expect if the data were normally distributed.
 
-A conjugate analysis would use a bivariate normal distribution for the coefficients conditional on $\sigma^2$.   We will instead use a "reference prior" that is a limiting version of the conjugate prior.
+A conjugate analysis would use a bivariate normal distribution for the coefficients conditional on $\sigma^2$, where $\sigma$  provides scaling in term of units for the response. This corresponds to  $\alpha$ given  $\sigma^2$ being normally distributed 
+$$\alpha \mid \sigma^2 \sim N(a_0, \sigma^2 S_{\alpha}/n_0)$$
+with a mean $a_0$, and a variance controlled by the parameter $S_{\alpha}/n_0)$ and $n_0$ reflecting a "prior" sample size that controls how concentrated our prior beliefs are about the prior mean.
+Similarly, $\beta$ is normally distributed given $\sigma^2$
+$$\beta \mid \sigma^2 \sim N(b_0, \sigma^2 S_{\beta}/n_0)$$
+with a mean of $b_0$ and variance that is $\sigma^2 S_{\beta}/n_0$.
+The covariance between $\alpha$ and $\beta$  is $\sigma^2 S_{\alpha, \beta}/n_0$ where $S_{\alpha, \beta}$ is parameter that describes a priori our beliefs about how $\alpha$ and $\beta$ vary together. If $S_{alpha, beta}$ is 0, then a priori $\alpha$ will be independent of $\beta$, conditional on $\sigma^2$.   To complete the conjugate specification, we would assign $1/\sigma^2$ a gamma distribution
+$$1/\sigma^2 \sim G(\nu_0/2, \nu_0 \sigma^2_0/2)$$
+with $\nu_0$ degrees of freedom.  The hyper-parameter $\sigma^2_0$ is a prior estimate of sigma squared.  Because of conjugacy, the posterior distributions will be normal-gamma, with simple rules to update the parameters, however this does require eliciting several hyper-paramters.
 
-The reference prior is of the form that is a "uniform" distribution on the intercept and slope (both over the entire real line).  This is not a "proper" distribution, but is a limiting case of a normal distribution  for $\beta_1, \beta_0$, $$\beta_0 \mid \sigma^2 \sim N(0, \sigma^2/n_0)$$ independent of $$\beta_1 \mid \sigma^2 \sim N(0, \sigma^2/n_0)$$ where we let $n_0 \to 0$.  In addition let's reparameterize the  variance in terms of the precision, $1/\sigma^2 \equiv \phi$  and use a limiting version of a gamma prior on $\phi$, so that the joint prior distribution is $$p(\beta_0, \beta_1, \phi) \propto 1/\phi$$. Under this "improper" prior distribution, the posterior distribution of the coefficients is centered at the ordinary least squares estimates, e.g. $$\beta_1 \mid \sigma^2, \text{data } \sim N(\hat{\beta}_1), \sigma^2/SXX)$$ and  $$\beta_0 \mid \sigma^2, \text{data } \sim N(\hat{\beta}_0), \sigma^2(1/n + 1/SXX)$$ 
-where $SXX = \sum_i (X_i - \bar{X})^2$.
+As an alternative or starting point, it is useful to provide a default or reference analysis as a starting point. The reference prior distribution is obtained as a limit of the normal distributions as those variance parameters go to infinity and is flat or uniform in $\alpha$ and $\beta$. The limit of the conjugate gamma prior, with prior degrees of freedom going to 0, provides the reference prior for $\sigma^2$ that we've used previously. 
 
-Unconditional on $\sigma^2$,  the posterior distributions become a Student $t$ distribution with degrees of freedom $n - 2$.  The posterior credible intervals under this "reference" prior are in fact numerically equivalent to the confidence intervals from the classical frequentist analysis, providing a baseline for other Bayesian analyses with more informative prior distributions or perhaps other "objective" prior distributions, such as a student-t prior with 1 degree of freedom which is known as the Cauchy.
+The joint prior distribution is written as
+$$p(\beta_0, \beta_1, \phi) \propto 1/\phi$$
+which is not a "proper" distribution.  However  under this "improper" prior distribution, the posterior distribution is in fact proper if $n > 2$ with the posterior distribution of the coefficients  
+centered at the ordinary least squares estimates, e.g. 
+$$\alpha \mid \sigma^2, \text{data } \sim N(\hat{\alpha}, \sigma^2(1/n + 1/SXX)$$ 
+where $SXX = \sum_i (X_i - \bar{X})^2$ and
+$$\beta \mid \sigma^2, \text{data } \sim N(\hat{\beta}), \sigma^2/SXX)$$
+are the marginal posterior distributions of the slope and intercept condional on $\sigma^2$.
+Unconditional on $\sigma^2$,  the posterior distributions become  Student $t$ distribution 
+$$\alpha \text{data } \sim t_{n-2}(\hat{\alpha}, \sigma^2(1/n + 1/SXX)$$ 
+and 
+$$\beta \mid  \text{data } \sim t_{n-2}(\hat{\beta}), \sigma^2/SXX)$$
+with degrees of freedom $n - 2$ and the location and scale parameters corresponding to the OLS estimates and standard errors squared.  The posterior credible intervals under this "reference" prior are in fact numerically equivalent to the confidence intervals from the classical frequentist analysis, providing a baseline for other Bayesian analyses with more informative prior distributions or perhaps other "objective" prior distributions, such as a student-t prior with 1 degree of freedom which is known as the Cauchy.
 
 
-Using `lm` to obtain the OLS estimates. 
+We can use `lm` to obtain the OLS estimates but now interprete from a Bayesian perspective:
 
 ```{r summaries}
 summary(bodyfat.lm)
 out = summary(bodyfat.lm)$coef[, 1:2]
 out
 ```
-
-The columns labeled Estimate and SE are equivalent to the posterior means and standard deviations respectively, which you could use to manually form  credible intervals.
+The columns labeled Estimate and SE are equivalent to the posterior means and standard deviations respectively, which you could use to manually form  credible intervals. 
 
 The `confint` function provides 95% confidence intervals, which under the reference prior are equivalent to 95% credible intervals.  The code below extracts them and just relabels the output. 
 
