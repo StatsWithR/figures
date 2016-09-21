@@ -1,8 +1,7 @@
 ---
 title: "Bayesian linear regression"
 author: Dr Merlise A Clyde, Duke University
-output: github_document
----
+output: md_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -52,7 +51,7 @@ Let's now turn to the Bayesian answer and show how to obtain a reference posteri
 ### Bayesian Estimation using the reference prior###
 
 The Bayesian model starts with the same model as the classical frequentist:
-$$Y_i = \alpah + \beta X_i + \epsilon_i$$
+$$Y_i = \alpha + \beta X_i + \epsilon_i$$
 with the assumption that the errors $\epsilon_i$ are independent and identically distributed as normal random variables with mean zero and constant variance $\sigma^2$.  This assumption is exactly the same used for classical inference for testing and constructing confidence intervals.   The diagnostic plots from frequentist model fitting for checking residuals, may be used to help check this assumption
 ```{r qqplot}
 plot(bodyfat.lm, which=2)
@@ -61,40 +60,41 @@ plot(bodyfat.lm, which=2)
 where the quantiles of the residuals (estimated errors) are plotted against their theoretical values or what we would expect if the data were normally distributed.
 
 A conjugate analysis would use a bivariate normal distribution for the coefficients conditional on $\sigma^2$, where $\sigma$  provides scaling in term of units for the response. This corresponds to  $\alpha$ given  $\sigma^2$ being normally distributed 
-$$\alpha \mid \sigma^2 \sim N(a_0, \sigma^2 S_{\alpha}/n_0)$$
-with a mean $a_0$, and a variance controlled by the parameter $S_{\alpha}/n_0)$ and $n_0$ reflecting a "prior" sample size that controls how concentrated our prior beliefs are about the prior mean.
+$$\alpha \mid \sigma^2 \sim N(a_0, \sigma^2 S_{\alpha})$$
+with a mean $a_0$, and a variance controlled by the parameter $S_{\alpha}$ that controls how concentrated our prior beliefs are about the prior mean.
 Similarly, $\beta$ is normally distributed given $\sigma^2$
-$$\beta \mid \sigma^2 \sim N(b_0, \sigma^2 S_{\beta}/n_0)$$
-with a mean of $b_0$ and variance that is $\sigma^2 S_{\beta}/n_0$.
-The covariance between $\alpha$ and $\beta$  is $\sigma^2 S_{\alpha, \beta}/n_0$ where $S_{\alpha, \beta}$ is parameter that describes a priori our beliefs about how $\alpha$ and $\beta$ vary together. If $S_{alpha, beta}$ is 0, then a priori $\alpha$ will be independent of $\beta$, conditional on $\sigma^2$.   To complete the conjugate specification, we would assign $1/\sigma^2$ a gamma distribution
+$$\beta \mid \sigma^2 \sim N(b_0, \sigma^2 S_{\beta}$$
+with a mean of $b_0$ and variance that is $\sigma^2 S_{\beta}$.
+The covariance between $\alpha$ and $\beta$  is $\sigma^2 S_{\alpha, \beta}$ where $S_{\alpha, \beta}$ is parameter that describes a priori our beliefs about how $\alpha$ and $\beta$ vary together. If $S_{\alpha, \beta}$ is 0, then a priori $\alpha$ will be independent of $\beta$, conditional on $\sigma^2$.   To complete the conjugate specification, we would assign $1/\sigma^2$ a gamma distribution
 $$1/\sigma^2 \sim G(\nu_0/2, \nu_0 \sigma^2_0/2)$$
-with $\nu_0$ degrees of freedom.  The hyper-parameter $\sigma^2_0$ is a prior estimate of sigma squared.  Because of conjugacy, the posterior distributions will be normal-gamma, with simple rules to update the parameters, however this does require eliciting several hyper-paramters.
+with $\nu_0$ degrees of freedom and the hyper-parameter $\sigma^2_0$ is a prior estimate of $\sigma^2$.  Because of conjugacy, the posterior distributions will be in the same Normal-Gamma family, with simple rules to update the parameters, however this does require eliciting several hyper-paramters.
 
-As an alternative or starting point, it is useful to provide a default or reference analysis as a starting point. The reference prior distribution is obtained as a limit of the normal distributions as those variance parameters go to infinity and is flat or uniform in $\alpha$ and $\beta$. The limit of the conjugate gamma prior, with prior degrees of freedom going to 0, provides the reference prior for $\sigma^2$ that we've used previously. 
+As an alternative or starting point, it is useful to provide a default or reference analysis as a starting point. The reference prior distribution is obtained as a limit of the normal distributions as those variance and covariance parameters go to infinity and is flat or uniform in $\alpha$ and $\beta$. The limit of the conjugate gamma prior, with prior degrees of freedom going to 0, provides the reference prior for $\sigma^2$ that we've used previously, $p(\sigma^2) \propto 1/\sigma^2$.
 
-The joint prior distribution is written as
+The joint "prior"" distribution is written as
 $$p(\beta_0, \beta_1, \phi) \propto 1/\phi$$
-which is not a "proper" distribution.  However  under this "improper" prior distribution, the posterior distribution is in fact proper if $n > 2$ with the posterior distribution of the coefficients  
+which is not a proper distribution.  However  under this "improper" prior distribution, the posterior distribution is in fact proper if $n > 2$ with the posterior distribution of the coefficients  
 centered at the ordinary least squares estimates, e.g. 
 $$\alpha \mid \sigma^2, \text{data } \sim N(\hat{\alpha}, \sigma^2(1/n + 1/SXX)$$ 
 where $SXX = \sum_i (X_i - \bar{X})^2$ and
 $$\beta \mid \sigma^2, \text{data } \sim N(\hat{\beta}), \sigma^2/SXX)$$
 are the marginal posterior distributions of the slope and intercept condional on $\sigma^2$.
-Unconditional on $\sigma^2$,  the posterior distributions become  Student $t$ distribution 
-$$\alpha \text{data } \sim t_{n-2}(\hat{\alpha}, \sigma^2(1/n + 1/SXX)$$ 
+Unconditional on $\sigma^2$,  the posterior distributions become  Student $t$ distributions where 
+$$\alpha \mid \text{data } \sim t_{n-2}(\hat{\alpha}, \sigma^2(1/n + 1/SXX)$$ 
 and 
 $$\beta \mid  \text{data } \sim t_{n-2}(\hat{\beta}), \sigma^2/SXX)$$
 with degrees of freedom $n - 2$ and the location and scale parameters corresponding to the OLS estimates and standard errors squared.  The posterior credible intervals under this "reference" prior are in fact numerically equivalent to the confidence intervals from the classical frequentist analysis, providing a baseline for other Bayesian analyses with more informative prior distributions or perhaps other "objective" prior distributions, such as a student-t prior with 1 degree of freedom which is known as the Cauchy.
 
 
-We can use `lm` to obtain the OLS estimates but now interprete from a Bayesian perspective:
+We can use `lm` to obtain the OLS estimates used in the posterior distributions and credible intervals.  
 
 ```{r summaries}
 summary(bodyfat.lm)
 out = summary(bodyfat.lm)$coef[, 1:2]
 out
 ```
-The columns labeled Estimate and SE are equivalent to the posterior means and standard deviations respectively, which you could use to manually form  credible intervals. 
+
+The columns labeled Estimate and Std. Error are equivalent to the posterior means and standard deviations respectively, which you could use to manually form  credible intervals.  These intervals are the same as the frequentist confidence intervals, but we now interprete from a Bayesian perspective: 
 
 The `confint` function provides 95% confidence intervals, which under the reference prior are equivalent to 95% credible intervals.  The code below extracts them and just relabels the output. 
 
@@ -104,10 +104,23 @@ colnames(out) = c("posterior mean", "sd", "2.5", "97.5")
 round(out, 2)
 ```
 
-### credible intervals for the mean and prediction ###
+### Credible Intervals for the Mean and Predictions ###
 
-We can also use the classical OLS functions to obain 95% intervals for the mean at a point $$x$$ and the prediction at a point $$x$$.
+We can also use the classical OLS functions to obain 95% intervals for the mean at a point $x$.  The mean of $Y$ at the point $x_i$ is $\alpha + x_i \beta$, with a posterior distribution that is
+$$
+\alpha + x_i \beta \mid \text{data } \sim 
+t_{n-2}(\hat{\alpha} + x_i \hat{\beta}, S^2_{Y_i \mid X_i})
+$$
+where 
+$$S^2_{Y_i \mid X_i} = \hat{\sigma}^2 \left( 1/n + \frac{(x_i - \bar{x})^2}{SXX} \right)$$
+while for predicting a new observation at a point $x^*$, the distribution is Student $t$
+$$Y^* \mid \text{ data}, x^* t_{n-2}(\hat{\alpha} + x^* \hat{\beta}, S^2_{Y^* \mid x^*})) $$
+where 
+$$S^2_{Y^* \mid x^*} = \hat{\sigma}^2 \left(1 +  1/n + \frac{(x_i - \bar{x})^2}{SXX} \right).$$
 
+The variance for predicting a new observation has an extra $\hat{\sigma}^2$ which come from the uncertainty of a new observation about the unknown regression line.
+
+We can extract these intervals using the `predict` function:
 ```{r}
 x = bodyfat$Abdomen
 y= bodyfat$Bodyfat
@@ -128,24 +141,25 @@ legend(110,15, legend=c("Posterior mean", "95% CI for mean", "95% CI for predict
 
 ```
 
-Note in the above the legend has "CI" - in this case using CI for confidence interval and credible interval is correct.  The difference comes down to the interpretation. Let's look at case 39.
+Note in the above the legend has "CI" - in this case using CI for confidence interval and credible interval is correct.  The difference comes down to the interpretation. Let's look at prediction at the same abdominal circumference as in case 39.
 ```{r case39}
 pred.39 = predict(bodyfat.lm, newdata=bodyfat[39,], interval="prediction", level=.095)
 ```
 
 Based on the data that we  have seen, a Bayesian would expect that  a man with  waist circumference of 
-`r bodyfat[39, "Abdomen"]` or 
+`r bodyfat[39, "Abdomen"]` centimeters or 
 `r round(bodyfat[39, "Abodomen"]/2.54,3)` inches should have bodyfat
 of `r round(pred.39[1],3)` with a 95% chance that it is between
 `r  round(pred.39[2],3)` and `r  round(pred.39[3],3)` percent.
  
+While we expect the majority of the data will be within the prediction intervals (the small dashed lines), observation 39 seems to be well below the interval.  We nest examine Bayesian methods to calculale the probablity that the case is abnormal or an outlier by falling more than $k$ standard deviations from either side of the mean.
 
 ###Outliers###
 
 The plot and predictive intervals suggest that predictions for Case 39 are not well captured by the model. There is always the possibility that this case does not meet the assumptions of the simple linear model (wrong mean or variance) or could be in error.  Model diagnostics such as plots of  residuals versus fitted are useful in identifying potiential outliers, but we can also use the Bayesian paradigm to go further.
 
 The article by Chaloner & Brant (1988)  suggested on approach for defining outliers and then calculating the probability that an case or multiple cases were outliers.  The assumed model for our simple linear regression is
-$Y_i = \beta_0 + \beta_1 x_i + \epsilon_i$ with $\epsilon_$ having independent, identical distributions that are normal with mean zero 
+$Y_i = \beta_0 + \beta_1 x_i + \epsilon_i$ with $\epsilon_i$ having independent, identical distributions that are normal with mean zero 
 and constant variance $\sigma^2$, $N(0, \sigma^2)$.   Chaloner & Brant consider outliers to be points where the error or model discrepancy
 $\epsilon_i$ is greater than $\kappa$ standard deviations in either direction from zero, 
 and then proceed to calculate the posterior probability that a case is an outlier as $$P(|\epsilon| > \kappa \sigma \mid data).$$  
