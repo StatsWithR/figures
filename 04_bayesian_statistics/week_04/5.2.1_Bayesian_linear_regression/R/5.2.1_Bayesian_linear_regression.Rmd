@@ -1,8 +1,13 @@
 ---
+output:
+  pdf_document: default
+  html_document: default
+---
+---
 title: "Bayesian linear regression"
 author: Dr Merlise A Clyde, Duke University
-output: html_document
-  keep_md: true
+output: pdf_document
+
 
 
 ```{r setup, include=FALSE}
