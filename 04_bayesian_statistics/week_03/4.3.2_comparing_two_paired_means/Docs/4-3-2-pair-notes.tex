@@ -93,7 +93,7 @@ where $s^2$ is the sample variance, $s^2 = \sum(D_i - \bar{D})^2/(n-1)$, and $\G
 $$
 p(y) = \frac{1}{\Gamma(a)} b^a y^{a - 1} e^{- y b} 
 $$
-with expected value $a/b$.  From this we can see that $\E[s^2] = \sigma^2$ so that the sample variance is an unbiased estimator of the population variance. {\it Note that the rate parameterization that we are using here is different from the scale parameterization that is used in Week 2 for the Conjugate Poisson-Gamma}.  The rate parameterization leads to easier updating rules as we will see.   
+with expected value $a/b$.  From this we can find that $\E[s^2] = \sigma^2$ so that the sample variance is an unbiased estimator of the population variance. {\it Note that the rate parameterization that we are using here is different from the scale parameterization that is used in Week 2 for the Conjugate Poisson-Gamma}.  The rate parameterization leads to easier updating rules as we will see.   
 
 
 For ease of derivation, we are going to create a new parameter $\phi \equiv 1/\sigma^2$ to help with specifying a conjugate prior distribution.  The parameter $\phi$ is known as the precision;  if the variance is small we have high precision, while if the variance is small we have more uncertainty  and low precision.  In the new parameterization our two statistics have sampling distributions
@@ -222,13 +222,13 @@ $$m_n \pm t_{1 - \alpha/2, \nu_n} s_n$$
 
 \subsection*{Reference Prior}
 
-If you wish to use the Bayesian interpretation of probability, but want to try to be as objective as possible, you might think that a reasonable approach would be to construct your imaginary prior data letting your prior sample size and degrees of freedom go to zero.  A limiting case of the conjugate Normal-Gamma prior is what is refered to as a reference prior for $\mu, \phi$ and corresponds to taking $m_0 = n_0 = s^2_0 = 0$ but letting $\nu_0 = -1$. 
-The negative prior degrees of freedom do not make any sense, of course, but mathematically leads to 
+If you wish to use the Bayesian interpretation of probability, but want to try to be as objective as possible, you might think that a reasonable approach would be to construct your imaginary prior data letting your prior sample size and degrees of freedom go to zero.  A limiting case of the conjugate Normal-Gamma prior is what is refered to as a reference prior for $\mu, \phi$ and corresponds to taking $m_0 = n_0 = s^2_0 = 0$ but letting $\nu_0 = -1$.   
+The negative prior degrees of freedom do not make any sense,  but this slight difference is important as the resulting  prior distribution does not depend on the units of measurenent, a form of "invariance".   While this is not a proper prior distribution, it does lead to 
 a proper posterior distribution for $\mu$ 
 $$
 \mu \mid \data  \sim \St_{\nu}(\bar{D}, s^2/n)  \text{ or }  \frac{\mu - \bar{D}}{\sqrt{(s^2/n}}  \mid \data \sim \St_{\nu}(0,1)
 $$
-where $\nu = n - 1$.
+where $\nu = n - 1$.  (Technically it is proper if we have at least 2 observations).
 The right hand distribution has the same form as the sampling distribution  for $\bar{D}$ (when conditioning on $\mu$), providing a duality between the frequentist and Bayesian paradigms for estimation, e.g.  95\% credible intervals ar of the form
 $$\bar{D} \pm t_{1 - \alpha/2, n - 1} s/\sqrt{n}$$
 where  $t_{1 - \alpha/2, n - 1}$  is the usual Student $t$
@@ -251,38 +251,7 @@ $$
 $$
 which depends on the prior predictive distribution of the data or sufficient statistics $\bar{D}$ and $s^2$ under the two hypotheses. 
 
-
-From Bayes theorem we have that conditional on $H_i$ (for $i$ equal 1 or 2) that
-$$p(\mu, \phi  \mid \data, H_i) = \frac{p(\mu, \phi \mid H_i) p(\data \mid \mu, \phi, H_i)}{p(\data \mid H_i)}$$
-If we happen to know the conjugate updating rules and the forms of the densities then we can solve for $p(\data \mid H_i)$ as
-$$
-p(\data \mid H_i) = \frac{p(\mu, \phi  \mid H_i) p(\data \mid \mu, \phi, H_i)}{p(\mu, \phi \mid \data, H_i)}
-$$
-For those that are comfortable with integration,
-$$
-p(\data \mid H_i) = \int_0^\infty \int_{-\infty}^\infty p(\mu, \phi  \mid H_i) p(\data \mid \mu, \phi, H_i) d \mu \, d \phi.
-$$
-With some algebra we can simplify the expression of the ratio of the predictive distributions of the data to find the Bayes factor. 
-
-{\bf To do: add derivation}
-
-Under a limiting case with $\nu_0 =s^2_0 = 0$ the Bayes factor is   
-    $$
-   \BF[H_1 : H_2] = \left(\frac{n + \n0}{\n0} \right)^{1/2} \left(
-  \frac{ t^2  \frac{\n0}{n + \n0} + \nu }
-  { t^2  + \nu} \right)^{\frac{\nu + 1}{2}}
-    $$
-which is a function of the 
-\begin{itemize}
-\item t-statistic $$t = \frac{|\bar{D}|}{s/\sqrt{n}}$$   
-\item sample standard deviation $s$ 
-\item degrees of freedom $\nu = n -1$
-\end{itemize}
-
-This provides a way to provide a posterior probability of the hypothesis through the Bayes factor that depends on the usual $t$ statistic. 
-
-\end{document}
-
+To start, lets look at the distribution of $\bar{D}$.
 One way to think of $\bar{D}$ is that it is a noisy version of the population mean
 $$\bar{D} = \mu + \epsilon$$
 where $\epsilon$ has a normal distribution with mean 0 and variance $1/(\phi n)$.
@@ -301,6 +270,40 @@ $$
 \frac{\bar{D} - m_0} {s_0   \sqrt{\left(\frac 1 n + \frac 1 {n_0}\right)}} \sim \St_{\nu_0}(0,1)
 $$
 a standard $t$ distribution with $\nu_0$ degrees of freedom.  The extra uncertainty due to the unknown variance leads to a distribution with heavier tails and wider intervals.
+
+The above derivation does not include the data from $s^2$.  Let's see how we can incorporate that.
+From Bayes theorem we have that conditional on $H_i$ (for $i$ equal 1 or 2) that
+$$p(\mu, \phi  \mid \data, H_i) = \frac{p(\mu, \phi \mid H_i) p(\data \mid \mu, \phi, H_i)}{p(\data \mid H_i)}$$.
+If we happen to know the conjugate updating rules and the forms of the densities then we can solve for $p(\data \mid H_i)$ as
+$$
+p(\data \mid H_i) = \frac{p(\mu, \phi  \mid H_i) p(\data \mid \mu, \phi, H_i)}{p(\mu, \phi \mid \data, H_i)}
+$$
+For those that are comfortable with integration,
+$$
+p(\data \mid H_i) = \int_0^\infty \int_{-\infty}^\infty p(\mu, \phi  \mid H_i) p(\data \mid \mu, \phi, H_i) d \mu \, d \phi.
+$$
+With some algebra we can simplify the expression of the ratio of the predictive distributions of the data to find the Bayes factor. 
+
+
+Under a limiting case with $\nu_0 =s^2_0 = 0$ the Bayes factor is   
+    $$
+   \BF[H_1 : H_2] = \left(\frac{n + \n0}{\n0} \right)^{1/2} \left(
+  \frac{ t^2  \frac{\n0}{n + \n0} + \nu }
+  { t^2  + \nu} \right)^{\frac{\nu + 1}{2}}
+    $$
+which is a function of the 
+\begin{itemize}
+\item t-statistic $$t = \frac{|\bar{D}|}{s/\sqrt{n}}$$   
+\item sample standard deviation $s$ 
+\item degrees of freedom $\nu = n -1$
+\end{itemize}
+
+This provides a way to provide a posterior probability of the hypothesis through the Bayes factor that depends on the usual $t$ statistic. 
+
+\vspace{.5in}
+\bf{Add R-code from github}
+\end{document}
+
 
 
 {\bf To Do:  add example code for video}
