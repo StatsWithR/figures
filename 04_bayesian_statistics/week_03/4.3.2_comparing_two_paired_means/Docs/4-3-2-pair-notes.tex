@@ -24,7 +24,7 @@
 \title{Optional Reading:\\ Derivations for comparing two paired means using Bayes factors}
 
 \author{Dr.~Merlise Clyde}
-\date{}
+\date{Draft}
 
 
 \usepackage{Sweave}
@@ -71,18 +71,19 @@ Rather than working with the two groups of observations, we will work with the d
 \end{Schunk}
 
 We will make the same assumptions about the distributions of the differences as in the case of the frequentist paired t-test.  That is conditional on the parameters $\mu$ and $\sigma^2$
-the observed differences are independently and identically distributed from a  normal distribution expressed notationally as
+the observed differences are independently and identically distributed from a  normal distribution expressed  as
 $$D_i \mid \mu, \sigma^2 \iid \No(\mu, \sigma^2)$$.  To check the assumption of normality we can look at a histogram or normal quantile plot of the sampled differences. 
 
 \includegraphics{4-3-2-pair-notes-hist}
 
 \subsection*{Likelihood}
 The normal sampling model leads to a likelihood function 
-$$
+\begin{equation}
 {\cal{L}}(\mu, \sigma^2) = \prod_{i = 1}^{n} \frac{1}{\sqrt{\sigma^2 2 \pi}} \exp{\left( - \frac{1}{2}\frac{(D_i - \mu)^2}{\sigma^2} \right)} 
-$$
+\label{eq:lik}
+\end{equation}
 where the likelihood function is proportional to the sampling distribution of the data.
-To simplify our calculations we can reduce the data down to two "sufficent" statistics, where
+To simplify our calculations we can reduce the data down to two "sufficient" statistics, where
 $$ \bar{D} \mid \mu, \sigma^2 \sim \No(\mu,  \sigma^2/n)$$
 and is independent of 
 $$ 
@@ -92,16 +93,16 @@ where $s^2$ is the sample variance, $s^2 = \sum(D_i - \bar{D})^2/(n-1)$, and $\G
 $$
 p(y) = \frac{1}{\Gamma(a)} b^a y^{a - 1} e^{- y b} 
 $$
-with expected value $a/b$.  From this we can see that $\E[s^2] = \sigma^2$ so that the sample variance is an unbiased estmator of the population variance. {\it Note that the rate parameterization that we are using here is different from the scale parameterization that is used in Week 2 for the Conjugate Poisson-Gamma}.  The rate parameterization leads to easier updating rules as we will see.   
+with expected value $a/b$.  From this we can see that $\E[s^2] = \sigma^2$ so that the sample variance is an unbiased estimator of the population variance. {\it Note that the rate parameterization that we are using here is different from the scale parameterization that is used in Week 2 for the Conjugate Poisson-Gamma}.  The rate parameterization leads to easier updating rules as we will see.   
 
 
-For ease of derivation, we are going to create a new parameter $\phi \equiv 1/\sigma^2$ to help with specifing a conjugate prior distribution.  The paramter $\phi$ is known as the precision;  if the variance is small we have high precision, while if the variance is small we have more uncertainty  and low precision.  In the new parameterization our two statistics have sampling distibutions
+For ease of derivation, we are going to create a new parameter $\phi \equiv 1/\sigma^2$ to help with specifying a conjugate prior distribution.  The parameter $\phi$ is known as the precision;  if the variance is small we have high precision, while if the variance is small we have more uncertainty  and low precision.  In the new parameterization our two statistics have sampling distributions
 
 \begin{align}
  \bar{D} \mid \mu, \phi & \sim \No\left(\mu,  1/(\phi n)\right) \\
  s^2_d \mid \phi & \sim  \Ga(\nu/2,  \nu \phi/2 )
 \end{align}
-where $\nu = n-1 $ is the usual degrees of freedom leading to a likelood function based on taking the product of the independent distributions 
+where $\nu = n-1 $ is the usual degrees of freedom leading to a likelihood function based on taking the product of the independent distributions 
 $$
 {\cal{L}}(\mu, \phi) \propto (n\phi)^{1/2} \frac{1}{\sqrt{(2 \pi)}} 
 \exp\left\{- \frac 1 2  n \phi (\bar{D} - \mu)^2 \right\}
@@ -121,7 +122,7 @@ In Week 2 we studied the conjugate prior for a normal mean assuming that $\sigma
 conditional on $\sigma^2$ (or $\phi$ now), the conjugate prior for $\mu$ given $\phi$ is a normal distribution,  
 $$ \mu \mid \phi \sim \No \left(m_0, \frac{1}{n_0 \phi} \right)
 $$
-where $m_0$ is the prior mean and $n_0$ is a hyperparameter that is used to represent
+where $m_0$ is the prior mean and $n_0$ is a hyper-parameter that is used to represent
 how concentrated or less concentrated the distribution is about $m_0$ relative to the precision $\phi$, and may be
 thought of as a prior imaginary sample size upon which the prior distribution is 
 based if there are no historical observations. Taking $n_0 = 1$ implies that our prior distribution is worth the 
@@ -138,22 +139,24 @@ p(s^2 \mid \phi) \\
 \intertext{where we have left the sampling distribution for $s^2$ as a density as it does not involve $\mu$. Ignoring constants that do not involve $\phi$ or $\mu$ we may simplify further} \\
 p(\mu \mid \phi, \data) & \propto  \phi^{1/2}  \exp\left\{- \frac 1 2  n \phi (\bar{D} - \mu)^2  - \frac 1 2  n_0 \phi (\mu - m_0)^2 \right\}  \left(\phi^{1/2} p(s^2 \mid \phi) \right)
 \end{align}
-where the above expression includes the sum of two quadratic expressions in the exponential.   This almost looks like a normal. Can these be combined to form one quadtric expression that looks like a normal density?  Yes!   
-Taking the a normal distriution for a paramter $\mu$ with mean $m$ and precision $p$, the quadratic term inthe exponetial may be expanded as
+where the above expression includes the sum of two quadratic expressions in the exponential.   This almost looks like a normal. Can these be combined to form one quadratic expression that looks like a normal density?  Yes!   This is known as "completing the square".
+Taking the a normal distribution for a parameter $\mu$ with mean $m$ and precision $p$, the quadratic term in the exponential may be expanded as
 $$p(\mu - m)^2 = p\mu^2 - 2 p \mu m + p m^2$$
-where we can read off that the precision is the term that multiplies the quadratic in $\mu$ and term that muliplies the linear term in $\mu$ is the product of  two times the mean and precision; if we know the precision, we can identify the mean.  The last term is the precision times the mean squared.
-For our posterior,  we need to expand  the quadratics and recombineterm to identify the new precision (the coefficent multiplying the quadratic in $\mu$) and the new mean  and completing the square or quadratic so that it may be factored.  Any left over terms will be independent of $\mu$ but may depend on $\phi$.  Applying to our case we have
+where we can read off that the precision is the term that multiplies the quadratic in $\mu$ and term that multiplies the linear term in $\mu$ is the product of  two times the mean and precision; if we know the precision, we can identify the mean.  The last term is the precision times the mean squared.
+For our posterior,  we need to expand  the quadratics and recombine
+terms to identify the new precision (the coefficient multiplying the quadratic in $\mu$) and the new mean  and completing the square or quadratic so that it may be factored.  Any left over terms will be independent of $\mu$ but may depend on $\phi$.  Applying to our case we have
 \begin{align*}
 - \frac 1 2  n \phi (\bar{D} - \mu)^2  - \frac 1 2  n_0 \phi (\mu - m_0)^2  & = 
 -\frac 1 2 \left(\phi( n + n_0) \mu^2 - 2 \phi \mu (n \bar{D} + n_0 m_0) + \phi (n \bar{D}^2 + n_0 m_0^2) \right)  
 \end{align*}
-where we can read off that the posterior precision is $\phi(n + n_0)$.   The linear term is not yet of the form of the posterior precision times the posterior mean (times 2), but if we multiply and divide by $n + n_0$ it will does satisy that
- $$-\frac 1 2 \left(\phi( n + n_0) \mu^2 - 2 \phi ( n + n_0) \mu \frac{(n \bar{D} + n_0 m_0) } {n + n_0} + \phi (n \bar{D}^2 + n_0 m_0^2) \right)$$  
- so that we may identfy that the posterior mean is $(n \bar{D} + n_0 m_0) /(n + n_0)$ which combined with the precision (or inverse variance) is enough to identy the conditional posterior distribution for $\mu$.  This leads to the result
+where we can read off that the posterior precision is $\phi(n + n_0)$.   The linear term is not yet of the form of the posterior precision times the posterior mean (times 2), but if we multiply and divide by $n + n_0$ it does satisfy that
+ \begin{equation}-\frac 1 2 \left(\phi( n + n_0) \mu^2 - 2 \phi ( n + n_0) \mu \frac{(n \bar{D} + n_0 m_0) } {n + n_0} + \phi (n \bar{D}^2 + n_0 m_0^2) \right)  \label{eq:quad}
+ \end{equation}
+ so that we may identify that the posterior mean is $(n \bar{D} + n_0 m_0) /(n + n_0)$ which combined with the precision (or inverse variance) is enough to identity the conditional posterior distribution for $\mu$.  This leads to the result
 $$ \mu \mid \phi, \data \sim \No(m_n, (\phi n_n)^{-1})
 $$
 where $m_m = (n \bar{D} + n_0 m_0) /(n + n_0)$ a weighted average of the sample mean and the prior mean, and
-$n_n = n + n_0$ the sample and prior combined sample size.
+$n_n = n + n_0$ the sample and prior combined sample size.   This is exactly the result from earlier, but written in terms of relative prior precision and sampling precision $n_0$ and $n$ respectively to obtain the relative (to $\phi$) posterior precision $n_n = n + n_0$.
 
 
 
@@ -161,42 +164,45 @@ $n_n = n + n_0$ the sample and prior combined sample size.
 
 
 \subsection*{Conjugate prior for $\phi$}
-Since $\sigma^2$ and $\phi$ can only take on values greater than zero and are continuous rather than discrete,  any reasonable prior distribution needs to incorporate those constraints.  Out of the distributions that we have encountedred so far, the gamma distribution fits the bill and is in fact the conjugate prior distribution for $\phi$.  We will use the following parameterization
+Since $\sigma^2$ and $\phi$ can only take on values greater than zero and are continuous rather than discrete,  any reasonable prior distribution needs to incorporate those constraints.  Out of the distributions that we have encountered so far,
+the gamma distribution fits the bill and is in fact the conjugate prior distribution for $\phi$.  We will use the following parameterization
 $$
 \phi \sim \Ga(\nu_0/2, \nu_0 s^2_0/2)
 $$
 with hyperparameters  $\nu_0$ (the prior degrees of freedom) and a rate parameter $\nu_0 s^2_0$ where $s^2_0$ is the best prior estimate of $\sigma^2$  (based on real or imaginary data) with prior degrees of freedom $\nu_0$ with a density
-$$p(\phi) = \frac{1}{\Gamma{\nu_0/2}} (\nu_0 s^2_0 )^{\nu_0/2 -1} e^{- \phi \frac{\nu_0 s^2_0} {2}}
+$$p(\phi) = \frac{1}{\Gamma(\nu_0/2)} (\nu_0 s^2_0 )^{\nu_0/2} \phi^{\nu_0/2 - 1} e^{- \phi \frac{\nu_0 s^2_0} {2}}
 $$
 
-\subsection*{Joint Postierior}
+\subsection*{Joint Posterior}
 Together these form what is called a {\bf Normal-Gamma}($m_0, n_0, \nu_0, s^2_0$) family of distributions for $\mu, \phi$:
-$$
+\begin{equation}
 p(\mu, \phi) = \frac{(n_0 \phi)^{1/2}} {\sqrt{2\pi}} e^{- \frac{\phi n_0}{2} (\mu -m_0)^2} \frac{1}{\Gamma{\nu_0/2}} (\nu_0 s^2_0 )^{\nu_0/2 -1} e^{- \phi \frac{\nu_0 s^2_0} {2}}
-$$
+\label{eq:NG}
+\end{equation}
 based on taking the product of the conditional normal distribution for $\mu$ given $\phi$ and the marginal Gamma  distribution for $\phi$.
 
-The posterior distribution 
+Using the Normal-Gamma prior, the joint posterior is proportional to
 $$
 p(\mu, \phi \mid \data) \propto {\cal{L}}(\mu, \phi) p(\mu \mid \phi) p(\phi)
 )
 $$
+the likelihood in (\ref{eq:lik}) times the prior in (\ref{eq:NG}).
 is proportional to the product of the likelihood and priors.
-If we substitute all of the above expressions for the likelihood and priors and simplify we can show that the posterior is in the Normal-Gamma family.
+If we substitute all of the above expressions for the likelihood and priors and simplify we can show that the posterior is in the Normal-Gamma family.  When we found the conditional normal posterior for $\mu$ given $\phi$, we stopped after identifying the mean and variance.  The extra terms that are needed to complete the square involve $\phi$ so for the joint posterior distribution, we need to be a bit more careful about keeping track of terms.  
 
-{\bf show how to complete the square and obtain the conjugate posterior}
+
 
 \subsection*{Conjugate Posterior Distribution}
 Given the data $\bar{D}$, $n$, $\nu$ and $s^2$ the Normal-Gamma prior is updated to obtain posterior distribution which is Normal-Gamma($m_n, n_n, \nu_n, s^2_n$) where the posterior hyperparameters are obtained using the following updating rules
 \begin{itemize}
 \item $m_n$: posterior mean of $\mu$  
 $$m_n = \frac{n \bar{D} + n_0 m_0}{n + n_0}$$
-which is a weighted combination of the sample mean and the prior mean
-\item $n_n$:  posterior precision of the estimate $n_n = n + n_0$  based on combined observed sample size and prior sample size.
+which is a weighted combination of the sample mean and the prior mean with weights proportional to the relative precisions.
+\item $n_n$:  relative posterior precision of the estimate $n_n = n + n_0$  based on combined observed sample size and prior sample size.
 \item $\nu_n$: posterior degrees of freedom $\nu_n = \nu + \nu_0 + 1$ where the extra 1 comes from the distribution on $\mu$
 \item $s^2_n$: posterior scale (squared)  
 $$ s^2_n = \frac{ s^2 \nu + s^2_0 \nu_0 +  \frac{n n_0} {n + n_0} (\bar{D} - m_0)^2}{\nu_n} $$
-which combines the observed sum of squared deviations of the data,  from the sample mean ($\nu s^2$), the prior sum of squares ($\nu_0 s^2_0$), and the last term which is deviation of the observed sample mean from the prior mean. If our   prior mean is very far from the sample mean, this may in fact increase our posterior uncertainty.
+which combines the observed sum of squared deviations of the data,  from the sample mean ($\nu s^2$), the prior sum of squares ($\nu_0 s^2_0$), and the last term which is deviation of the observed sample mean from the prior mean. If our   prior mean is v<ery far from the sample mean, this may in fact increase our posterior uncertainty, although this effect goes away as the sample size increases.
 \end{itemize}
 
 
@@ -205,30 +211,33 @@ which combines the observed sum of squared deviations of the data,  from the sam
 The conditional distribution for $\mu$ given $\phi$ is normal with mean $m_m$ and
 variance $1/(n_n \phi)$, however, this does not directly help for obtaining credible intervals or inference as $\phi$ is unknown.
 For posterior inference about $\mu$ we need to obtain the marginal distribution by
-averaging  over the posterior uncertainty of $\phi$, resulting in 
+"averaging"  over the posterior uncertainty of $\phi$.  This requires integration (which we will show in the derivations), so for now we simply state the  result 
 $$
 \mu \mid \data  \sim \St_{\nu_n}(m_n, s^2_n/n_n)  \text{ or }  \frac{\mu - m_n}{\sqrt{(s^2_n/n_n)}} \sim \St_{\nu_n}(0,1)
 $$
+that $\mu$ given the data has a Student $t$ distribution centered at  $m_n$ (the posterior mean) and with a scale parameter that is $s^2_n/n_n$.   As with normals, subtracting the mean and dividing by the square root of the scale parameter leads to a scale-free distribution centered at 0.  Credible intervals or highest posterior density intervals with coverage $(1 - \alpha) 100\%$ may be obtained by taking 
+$$m_n \pm t_{1 - \alpha/2, \nu_n} s_n$$
 
-Credible intervals or highest posterior density intervals with coverage $(1 - \alpha) 100\%$ may be obtained by taking 
-$m_n \pm t_{1 - \alpha/2, \nu_n} s_n$
 
-{\bf To do: add derivation}
 
 \subsection*{Reference Prior}
 
-If you wish to use the Bayesian interpretation of probability, but want to try to be as objective as possible, you might think that a reasonable approache would be to construct your imaginary prior data letting your prior sample size and degrees of freedom go to zero.  A limiting case of the conjugate Normal-Gamma prior is what is refereed to as a reference prior for $\mu, \phi$ and corresponds to taking $m_0 = n_0 = s^2_0 = 0$ but letting $\nu_0 = -1$.  The negative prior degrees of freedom do not make any sense, but mathematically lead to 
-a posterior distribution for $\mu$ is 
+If you wish to use the Bayesian interpretation of probability, but want to try to be as objective as possible, you might think that a reasonable approach would be to construct your imaginary prior data letting your prior sample size and degrees of freedom go to zero.  A limiting case of the conjugate Normal-Gamma prior is what is refered to as a reference prior for $\mu, \phi$ and corresponds to taking $m_0 = n_0 = s^2_0 = 0$ but letting $\nu_0 = -1$. 
+The negative prior degrees of freedom do not make any sense, of course, but mathematically leads to 
+a proper posterior distribution for $\mu$ 
 $$
 \mu \mid \data  \sim \St_{\nu}(\bar{D}, s^2/n)  \text{ or }  \frac{\mu - \bar{D}}{\sqrt{(s^2/n}}  \mid \data \sim \St_{\nu}(0,1)
 $$
-of which the righthand distribution has the same form as the sampling distribution  for $\bar{D}$ (when conditioning on $\mu$), providing a duality between the frequentist and Bayesian paradigms for estimation.
-
-This allows the objective Bayesian to calculate the classical confidence interval, while providing the Bayesian probabilitic interpretation of the interval.
+where $\nu = n - 1$.
+The right hand distribution has the same form as the sampling distribution  for $\bar{D}$ (when conditioning on $\mu$), providing a duality between the frequentist and Bayesian paradigms for estimation, e.g.  95\% credible intervals ar of the form
+$$\bar{D} \pm t_{1 - \alpha/2, n - 1} s/\sqrt{n}$$
+where  $t_{1 - \alpha/2, n - 1}$  is the usual Student $t$
+This allows the objective Bayesian to calculate a classical 
+confidence interval, while providing the Bayesian probabilistic interpretation of the interval.
 
 \section*{Bayes Factors and Hypothesis Testing}
 
-The following were the hypotheses of interest in terms of the original parameters and the mean of the diffrences:
+The following were the hypotheses of interest in terms of the original parameters and the mean of the differences:
 \begin{description}%[means are different]
 \item [no differences] $H_1:  \mu_B = \mu_S  \Leftrightarrow \mu = 0 $   
 \item [means are different] $H_2:  \mu_B \neq \mu_S \Leftrightarrow \mu  \neq 0 $ 
@@ -236,7 +245,7 @@ The following were the hypotheses of interest in terms of the original parameter
 \item [ ] $H_{4}:  \mu_B < \mu_S \Leftrightarrow \mu  < 0 $
 \end{description}
 
-It should be clear that $H_3$ and $H_4$ are included in $H_2$, so that we first need to find the probabilty of $H_1$ and $H_2$.    To find the posterior probabilities, we start with the Bayes factor for comparing $H_1$  to $H2$,
+It should be clear that $H_3$ and $H_4$ are included in $H_2$, so that we first need to find the probability of $H_1$ and $H_2$.    To find the posterior probabilities, we start with the Bayes factor for comparing $H_1$  to $H2$,
 $$
 \BF[H_1: H_2] = \frac{p(\data \mid H_1)} {p(\data \mid H_2)}
 $$
@@ -253,7 +262,7 @@ For those that are comfortable with integration,
 $$
 p(\data \mid H_i) = \int_0^\infty \int_{-\infty}^\infty p(\mu, \phi  \mid H_i) p(\data \mid \mu, \phi, H_i) d \mu \, d \phi.
 $$
-With some algebra we can simpliy the expression of the ratio of the predictive distributions of the data to find the Bayes factor. 
+With some algebra we can simplify the expression of the ratio of the predictive distributions of the data to find the Bayes factor. 
 
 {\bf To do: add derivation}
 
@@ -295,3 +304,5 @@ a standard $t$ distribution with $\nu_0$ degrees of freedom.  The extra uncertai
 
 
 {\bf To Do:  add example code for video}
+
+\subsection*{Derivation (optional)}
