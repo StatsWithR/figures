@@ -72,7 +72,7 @@ Rather than working with the two groups of observations, we will work with the d
 
 We will make the same assumptions about the distributions of the differences as in the case of the frequentist paired t-test.  That is conditional on the parameters $\mu$ and $\sigma^2$
 the observed differences are independently and identically distributed from a  normal distribution expressed  as
-$$D_i \mid \mu, \sigma^2 \iid \No(\mu, \sigma^2)$$.  To check the assumption of normality we can look at a histogram or normal quantile plot of the sampled differences. 
+$$D_i \mid \mu, \sigma^2 \iid \No(\mu, \sigma^2).$$  To check the assumption of normality we can look at a histogram or normal quantile plot of the sampled differences. 
 
 \includegraphics{4-3-2-pair-notes-hist}
 
@@ -256,11 +256,11 @@ One way to think of $\bar{D}$ is that it is a noisy version of the population me
 $$\bar{D} = \mu + \epsilon$$
 where $\epsilon$ has a normal distribution with mean 0 and variance $1/(\phi n)$.
 Under $H_1$, 
-Since our prior distribution for $\mu$ was also normal and independent of the added noise (given $\phi$), we can add these two sources of variation to get the prior predictive distribution of $\bar{D}$ (given $\phi$) by adding the two means, $m_0 + 0$, and adding the two variances, $\frac{1}{\phi n} + \frac{1} {\phi n_0}$,
+since our prior distribution for $\mu$ was also normal and independent of the added noise (given $\phi$), we can add these two normal variables or sources of variation to get the prior predictive distribution of $\bar{D}$ (given $\phi$).  The sums of two independent normals are normal, with the mean obtained by adding the two means, $m_0 + 0$, and the variance is the sum of the two variances, $\frac{1}{\phi n} + \frac{1} {\phi n_0}$, so that
 $$
 \bar{D} \mid \phi \sim \No\left(m_0, \frac{1}{\phi} \left(\frac 1 n + \frac 1 {n_0}\right) \right)
 $$
-where the variance combines the uncertainty due to sampling variation and our prior uncertainty.  Of course, we do not know $\phi$ so if we average over our prior uncertainty for $\phi$, the resulting predictive distribution would be a Student $t$ distribution
+where the prior predictive variance combines the uncertainty due to sampling variation and our prior uncertainty.  Of course, we do not know $\phi$ so if we average over our prior uncertainty for $\phi$, the resulting predictive distribution would be a Student $t$ distribution
 $$
 \bar{D} \sim \St_{\nu_0}\left(m_0, s^2_0   \left(\frac 1 n + \frac 1 {n_0}\right)\right)
 $$
@@ -269,7 +269,7 @@ $s^2_0   \left(\frac 1 n + \frac 1 {n_0}\right)$, or the standardized version wh
 $$
 \frac{\bar{D} - m_0} {s_0   \sqrt{\left(\frac 1 n + \frac 1 {n_0}\right)}} \sim \St_{\nu_0}(0,1)
 $$
-a standard $t$ distribution with $\nu_0$ degrees of freedom.  The extra uncertainty due to the unknown variance leads to a distribution with heavier tails and wider intervals.
+a standard $t$ distribution with $\nu_0$ degrees of freedom.  The extra uncertainty due to the unknown variance leads to a distribution with heavier tails and wider intervals.  The derivation to show that this has a $t$ distribution  follows along the same lines as showing that the posterior for $\mu$ was a student $t$  (see section at the end), but where we use the distribution for $\bar{D}$  rather than $\mu$ given $\phi$.
 
 The above derivation does not include the data from $s^2$.  Let's see how we can incorporate that.
 From Bayes theorem we have that conditional on $H_i$ (for $i$ equal 1 or 2) that
@@ -298,14 +298,134 @@ which is a function of the
 \item degrees of freedom $\nu = n -1$
 \end{itemize}
 
-This provides a way to provide a posterior probability of the hypothesis through the Bayes factor that depends on the usual $t$ statistic. 
-
+This provides a way to provide a posterior probability of the hypothesis through the Bayes factor that depends on the usual $t$ statistic.  Under equal prior odds the posterior probability of $H_1$ is 
+$$
+p(H1 \mid \data) = 1/( 1 + 1/\BF[H_1: H_2])
+$$
 \vspace{.5in}
-\bf{Add R-code from github}
+
+
+\subsection*{R Code}
+
+Let's define a function to help simplify the calculations of the posterior probabilities and the Bayes factor using the normal prior
+$$
+\mu \mid \sigma^2, H_2 \sim N(\mu_0, \sigma^2/n_0)
+$$
+while under $H_1$,  $\mu$ is exactly zero.  Under both hypotheses, we will use the "reference" prior
+$$
+p(\sigma^2) \propto 1/\sigma^2.
+$$
+
+\begin{Schunk}
+\begin{Sinput}
+> bayes.t.test = function(x, n0=1, mu0 = 0,  prior.H1=.5) {
++   out = t.test(x - mu0)
++   t = as.numeric(abs(out$statistic))
++   n = length(x)
++   df = n-1
++   # BF is BF of H1 to H2
++   BF=exp(.5*(log(n + n0) - log(n0) +
++                  (df + 1)*(log(t^2*n0/(n + n0) + df) -
++                            log(t^2 + df))))
++   PO= BF*prior.H1/(1 - prior.H1)
++   post.prob = 1/(1 + 1/PO)
++   return(list(BF.H1.H2=BF, post.prob.H1 = post.prob,
++               post.prob.H2= 1 - post.prob,
++               t=t, p.value=out$p.value, df=n-1))
++ }
+\end{Sinput}
+\end{Schunk}
+
+Applying the function to the zinc data:
+\begin{Schunk}
+\begin{Sinput}
+> out = bayes.t.test(zinc$difference)
+> out
+\end{Sinput}
+\begin{Soutput}
+$BF.H1.H2
+[1] 0.01539321
+
+$post.prob.H1
+[1] 0.01515985
+
+$post.prob.H2
+[1] 0.9848402
+
+$t
+[1] 4.863813
+
+$p.value
+[1] 0.0008911155
+
+$df
+[1] 9
+\end{Soutput}
+\end{Schunk}
+ we obtain BF, posterior probabilities, the t-statistics and p-value, where $H_1$ is that the mean difference $\mu$ is 0 while $H_2$ is that the mean difference is not zero, but {\it a priori} our uncertainty is described by the normal distribution. To obtain the Bayes factor for H2 to H1, we simply take one over the Bayes factor:
+\begin{Schunk}
+\begin{Sinput}
+> 1/out$BF.H1.H2
+\end{Sinput}
+\begin{Soutput}
+[1] 64.96373
+\end{Soutput}
+\end{Schunk}
+
+The Bayes factor for comparing $H_1$ to $H_2$ is $0.0154$ which provides evidence against  $H_1$ or  equivalently the evidence in favor of $H_2$ is  $64.96$.  Under  equal prior odds, the 
+posterior probability of $H_1$ is
+$$
+P(H_1 \mid \text{data}) = \frac{0.0154}{ 1 + 0.0154 } = 0.0152
+$$
+while  the p-value $\approx  0.00089$.  Both the p-value and posterior probability suggest evidence against $H_1$, however the p-value is obtained assuming that $H_1$ is true and finds the probability of data as extreme or more extreme than what we actually observed, while the posterior probability is comparing the likelihoods of the hypotheses through the predictive distribution of the data under each of the hypotheses which are evaluated at the observed data, and not data that we might have observed.
+
+
+Note: the function that we defined could be used for any one sample hypothesis test of $\mu = \mu_0$ versus $\mu \neq \mu_0$.  
+
+\subsection*{Derivation of Student $t$ distribution (optional)}
+
+If $\mu$ given $\sigma^2$ (and the data) has a normal distribution with mean $m_m$ and variance $\sigma^2/n_n$ and $1/\sigma^2 \equiv \phi$ (given the data) has a Gamma distribution with shape parameter 
+$\nu_n/2$ and rate parameter $\nu_n s^2_n/2$ 
+\begin{align*}
+\mu \mid \sigma^2, \data & \sim N(m_m, \sigma^2/n_n) \\ 
+1/\sigma^2 \mid \data & \sim \Ga(\nu_n/2, \nu_n s^2_n/2) 
+\intertext{then}
+\mu \mid  \data & \sim t_{\nu_n}(m_m, s^2_n/n_n)
+\end{align*}
+a student $t$ distribution with mean $m_m$ and scale $s^2_n/n_n$ with degrees of freedom $\nu_n$.   This applies to the prior as well, so that without any data we use the prior hyper-parameters $m_0$, $n_0$, $\nu_0$ and $s^2_0$ in place of the updated values with the subscript $n$.  
+
+To simplify notation, we'll substitute $\phi = 1/\sigma^2$.  The marginal distribution for $\mu$ is obtained by averaging over the values of $\sigma^2$.  Since $\sigma^2$ takes on continuous values rather than discrete, this averaging is represented as an integral
+\begin{align*}
+p(\mu \mid \data) & = \int_0^\infty p(\mu \mid \phi, \data) p(\phi \mid \data) d\phi \\
+ & = \int_0^\infty 
+\frac{1}{\sqrt{2 \pi}} (n_n \phi)^{1/2} 
+e^{\left\{ - \frac{n_n \phi}{2} (\mu - m_n)^2 \right\}}
+\frac{1}{\Gamma(\nu_n/2)} \left(\frac{\nu_n s^2_n}{2}\right)^{\nu_n/2}
+\phi^{\nu_n/2 - 1} e^{\left\{- \phi \nu_n s^2_n/2\right\}} \, d\phi \\
+ & =  
+\left(\frac{n_n}{2 \pi}\right)^{1/2}\frac{1}{\Gamma\left(\frac{\nu_n}{2}\right)} \left(\frac{\nu_n s^2_n}{2}\right)^{\nu_n/2} \int_0^\infty  \phi^{(\nu_n +1)/2 - 1}
+e^{\left\{ - \phi \left( \frac{n_n  (\mu - m_n)^2 + \nu_n s^2_n}{2} \right)\right\}} \, d\phi
+\intertext{where the terms inside the integral are the "kernel" of a Gamma density.  We can multiply and divide by the normalizing constant of the Gamma density}
+p(\mu \mid \data) & =  
+\left(\frac{n_n}{2 \pi}\right)^{1/2}\frac{1}{\Gamma\left(\frac{\nu_n}{2}\right)} 
+\left(\frac{\nu_n s^2_n}{2}\right)^{\nu_n/2} 
+\Gamma\left(\frac{\nu_n + 1}{2}\right) 
+\left( \frac{n_n  (\mu - m_n)^2 + \nu_n s^2_n}{2} \right)^{- \frac{\nu_n + 1}{2}}  \times\\
+& \qquad \int_0^\infty  \frac{1}{\Gamma\left(\frac{\nu_n + 1}{2}\right)}
+\left( \frac{n_n  (\mu - m_n)^2 + \nu_n s^2_n}{2} \right)^{ \frac{\nu_n + 1}{2}} \phi^{(\nu_n +1)/2 - 1}
+e^{\left\{ - \phi \left( \frac{n_n  (\mu - m_n)^2 + \nu_n s^2_n}{2} \right)\right\}} \, d\phi
+\intertext{so that the term in the integral now integrates to one and the resulting distribution is}
+p(\mu \mid \data) & =  
+\left(\frac{n_n}{2 \pi}\right)^{1/2}\frac{\Gamma\left(\frac{\nu_n + 1}{2}\right) }{\Gamma\left(\frac{\nu_n}{2}\right)} 
+\left(\frac{\nu_n s^2_n}{2}\right)^{\nu_n/2} 
+\left( \frac{n_n  (\mu - m_n)^2 + \nu_n s^2_n}{2} \right)^{- \frac{\nu_n + 1}{2}}.
+\intertext{After some algebra this simplifies to}
+p(\mu \mid \data) & =  
+\frac{1}{\sqrt{\pi \nu_n s^2_n/n_n}}
+\frac{\Gamma\left(\frac{\nu_n + 1}{2}\right) }
+     {\Gamma\left(\frac{\nu_n}{2}\right)} 
+\left( 1 +  \frac{1}{\nu_n}\frac{(\mu - m_n)^2}{s^2_n/n_n} \right)^{- \frac{\nu_n + 1}{2}}
+\intertext{and is a more standard representation for a Student $t$ distribution and the  kernel of the density is the right most term.}
+\end{align*}
+
 \end{document}
-
-
-
-{\bf To Do:  add example code for video}
-
-\subsection*{Derivation (optional)}
