@@ -31,7 +31,7 @@ Model Complexity
 ```{r model-size}
 myblue = rgb(86,155,189, name="myblue", max=256)
 mydarkgrey = rgb(.5,.5,.5, name="mydarkgrey", max=1)
-plot(cog_bas$size, cog_bas$postprob, 
+plot(cog_bas$size, cog_bas$postprobs, 
      xlab="model size", 
      ylab="posterior model probability", pch=17,
      col=myblue,
